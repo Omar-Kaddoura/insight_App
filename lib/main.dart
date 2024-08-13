@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:insight/Pages/Authentication/register_page.dart';
-import 'package:insight/Pages/Authentication/login_page.dart';
-
+import 'Pages/Authentication/register_page.dart';
+import 'Pages/Authentication/login_page.dart';
 import 'Pages/Authentication/WelcomePage.dart';
+import 'package:insight/BottomNavigationBarPages/home_with_navigation.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +16,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const WelcomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const WelcomePage(),
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/home': (context) => HomePageWithNavigation(),
+      },
     );
   }
 }

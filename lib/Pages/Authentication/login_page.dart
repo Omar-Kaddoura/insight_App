@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (token != null) {
       await _storage.write(key: 'jwt', value: token);
+      Navigator.pushReplacementNamed(context, '/home');
       print('Login successful, token stored.');
     } else {
       // Show an error message
