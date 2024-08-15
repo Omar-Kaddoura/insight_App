@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacementNamed(context, '/home');
       print('Login successful, token stored.');
     } else {
-      // Show an error message
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed. Please check your credentials.')),
       );

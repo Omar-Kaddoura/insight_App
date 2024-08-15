@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:insight/BottomNavigationBarPages/News.dart';
-import 'package:insight/BottomNavigationBarPages/Profile.dart';
-import 'package:insight/BottomNavigationBarPages/Shop.dart';
 import 'package:insight/BottomNavigationBarPages/Social.dart';
+import 'package:insight/BottomNavigationBarPages/Shop.dart';
+import 'package:insight/BottomNavigationBarPages/Profile.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class HomePageWithNavigation extends StatefulWidget {
+  const HomePageWithNavigation({Key? key}) : super(key: key);
+
   @override
   _HomePageWithNavigationState createState() => _HomePageWithNavigationState();
 }
 
 class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
-  final _pageController = PageController();
+  final PageController _pageController = PageController();
   int _selectedIndex = 0;
 
   @override
@@ -30,11 +32,11 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
             _selectedIndex = index;
           });
         },
-        children: const <Widget>[
+        children: <Widget>[
           News(),
           Social(),
           Shop(),
-          ProfilePage(),
+          ProfilePage(), // Remove the logout function
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
