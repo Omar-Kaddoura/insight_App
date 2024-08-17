@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'Pages/Authentication/register_page.dart';
 import 'Pages/Authentication/login_page.dart';
 import 'Pages/Authentication/WelcomePage.dart';
-import 'package:insight/BottomNavigationBarPages/home_with_navigation.dart';
+import 'Admin/AdminBottomNavigationBarPages/Admin_home.dart';
+import 'BottomNavigationBarPages/home_with_navigation.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const WelcomePage(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        '/home': (context) => HomePageWithNavigation(),
+        '/student_home': (context) => HomePageWithNavigation(),
+        '/admin_home': (context) => AdminHome(),
       },
     );
   }

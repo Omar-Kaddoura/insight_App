@@ -16,20 +16,31 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    final result = await _authService.login(email, password);
+    print(result);
 
-    final token = await _authService.login(email, password);
+    if (result != null) {
+      final token = result['token'];
+      final type = result['type'];
+      if (token != null) {
+        await _storage.write(key: 'jwt', value: token);
 
-    if (token != null) {
-      await _storage.write(key: 'jwt', value: token);
-      Navigator.pushReplacementNamed(context, '/home');
-      print('Login successful, token stored.');
+        if (type  == 'Admin') {
+          Navigator.pushReplacementNamed(context, '/admin_home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/student_home');
+        }
+
+        print('Login successful, token stored.');
+      }
     } else {
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed. Please check your credentials.')),
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
