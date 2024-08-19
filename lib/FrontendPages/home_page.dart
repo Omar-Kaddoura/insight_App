@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'event_page.dart';
 import 'profile_page.dart';
+import 'Filter_Page.dart';
+
 import 'bottom_navigation.dart';
 import 'up_logo.dart'; // Import the custom app bar
 
@@ -95,7 +97,7 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       Center(child: Text('Shops Page Content')),
-      Center(child: Text('Social Page Content')),
+      FilterPage(),
       ProfilePage(), // Add the ProfilePage here
     ];
 
