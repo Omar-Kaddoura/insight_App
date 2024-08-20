@@ -29,6 +29,8 @@ class _FilterPageState extends State<FilterPage> {
   String? selectedFilter;
   String? selectedFaculty;
   String? selectedMajor;
+  String? companySearchQuery; // New variable for company search input
+  bool showCompanySearchField = false; // Flag to show/hide company search field
 
   List<String> majors = [
     'Agri-Business', 'Agri-culture', 'Applied Mathematics', 'Arabic', 'Archaeology',
@@ -55,6 +57,16 @@ class _FilterPageState extends State<FilterPage> {
       // Add more profiles as needed
     ],
     // Add other majors and their profiles here
+  };
+
+  Map<String, List<Map<String, String>>> companyProfiles = {
+    'Tech Corp': [
+      {'name': 'Alice Green', 'major': 'Computer Science', 'company': 'Tech Corp'},
+    ],
+    'ElectroTech': [
+      {'name': 'Carol Blue', 'major': 'Electrical and Computer Engineering', 'company': 'ElectroTech'},
+    ],
+    // Add other companies and their profiles here
   };
 
   @override
@@ -134,6 +146,8 @@ class _FilterPageState extends State<FilterPage> {
                         selectedFilter = value!;
                         selectedFaculty = null; // Reset the selected faculty when a new filter is chosen
                         selectedMajor = null; // Reset the selected major when a new filter is chosen
+                        companySearchQuery = null; // Reset the company search query
+                        showCompanySearchField = value == "Search by Company"; // Show search field only if selected filter is "Search by Company"
                         if (selectedFilter == "Search by Faculty") {
                           _showFacultyOptions();
                         } else if (selectedFilter == "Search by Major") {
@@ -144,6 +158,28 @@ class _FilterPageState extends State<FilterPage> {
                     hint: Text("Filter Settings"),
                     underline: Container(),
                   ),
+                  SizedBox(height: 20),
+                  // Company Search TextField
+                  if (showCompanySearchField)
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Enter company name',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      onChanged: (text) {
+                        setState(() {
+                          companySearchQuery = text;
+                        });
+                      },
+                      onSubmitted: (text) {
+                        setState(() {
+                          showCompanySearchField = false;
+                        });
+                      },
+                    ),
                   SizedBox(height: 20),
                   // Display profiles based on the selected faculty
                   if (selectedFaculty != null)
@@ -156,6 +192,12 @@ class _FilterPageState extends State<FilterPage> {
                     SizedBox(
                       height: 400, // Adjust the height accordingly
                       child: _buildMajorProfileGrid(selectedMajor!),
+                    ),
+                  // Display profiles based on the company search query
+                  if (companySearchQuery != null && companySearchQuery!.isNotEmpty)
+                    SizedBox(
+                      height: 400, // Adjust the height accordingly
+                      child: _buildCompanyProfileGrid(companySearchQuery!),
                     ),
                 ],
               ),
@@ -291,6 +333,29 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
+  Widget _buildCompanyProfileGrid(String company) {
+    List<Map<String, String>> profiles = companyProfiles[company] ?? [];
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // Two profiles per row
+        crossAxisSpacing: 6, // Reduce spacing between cards horizontally
+        mainAxisSpacing: 10, // Reduce spacing between cards vertically
+        childAspectRatio: 0.72, // Adjust aspect ratio for vertical space
+      ),
+      itemCount: profiles.length,
+      itemBuilder: (context, index) {
+        return _buildProfileCard(
+          'assets/profileUser.jpg',
+          profiles[index]['name']!,
+          profiles[index]['major']!,
+          profiles[index]['company']!,
+          showMessageButton: true,
+        );
+      },
+    );
+  }
+
   Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = true}) {
     return ClipRect(
       child: LayoutBuilder(
@@ -359,5 +424,4 @@ class _FilterPageState extends State<FilterPage> {
       ),
     );
   }
-
 }
