@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "247110518106",
+    "firebase_url": "https://insightt-e77ee-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "insightt-e77ee",
+    "storage_bucket": "insightt-e77ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247110518106:android:ee7d013f770e3347f55f63",
+        "android_client_info": {
+          "package_name": "com.example.omar_testing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVj4Ihw_lytSONtqQEpThiDbxYvc2ZwxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -22,8 +22,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result != null) {
       final token = result['token'];
       final type = result['type'];
+      final email = result['email'];
       if (token != null) {
         await _storage.write(key: 'jwt', value: token);
+        await _storage.write(key: 'email', value: email);
+        await _storage.write(key: 'type', value: type);
 
         if (type  == 'Admin') {
           Navigator.pushReplacementNamed(context, '/admin_home');
