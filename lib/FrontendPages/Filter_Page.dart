@@ -27,38 +27,41 @@ class FilterPage extends StatefulWidget {
 
 class _FilterPageState extends State<FilterPage> {
   String? selectedFilter;
+  String? selectedFaculty;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Horizontal Profile Panel
+            Container(
+              height: 250, // Adjust height if needed
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 8, // Adjust according to the number of profile cards
+                itemBuilder: (context, index) {
+                  if (index % 2 == 0) {
+                    return Row(
+                      children: [
+                        _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A', showMessageButton: true),
+                        _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B', showMessageButton: true),
+                      ],
+                    );
+                  } else {
+                    return SizedBox(width: 0); // Empty space for alignment
+                  }
+                },
+              ),
+            ),
+            SizedBox(height: 20),
+//Tried for the horz
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Horizontal Profile Panel
-                  Container(
-                    height: 225, // Adjust height if needed
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A'),
-                        _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B'),
-                        _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A'),
-                        _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B'),
-                        _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A'),
-                        _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B'),
-                        _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A'),
-                        _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B'),
-                        // Add more profiles as needed
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-
                   // Search by Name Section
                   TextField(
                     decoration: InputDecoration(
@@ -73,7 +76,7 @@ class _FilterPageState extends State<FilterPage> {
                     },
                   ),
                   SizedBox(height: 20),
-
+//Tried, for the Search by name box
                   // Filter Settings Dropdown Menu
                   DropdownButton<String>(
                     value: selectedFilter,
@@ -103,27 +106,35 @@ class _FilterPageState extends State<FilterPage> {
                     onChanged: (value) {
                       setState(() {
                         selectedFilter = value!;
+                        selectedFaculty = null; // Reset the selected faculty when a new filter is chosen
+
+                        if (selectedFilter == "Search by Faculty") {
+                          _showFacultyOptions();
+                        }
                       });
                     },
                     hint: Text("Filter Settings"),
                     underline: Container(),
                   ),
+                  SizedBox(height: 20),
+//Tried, for the drop down
+                  // Display profiles based on the selected faculty
+                  if (selectedFaculty != null)
+                    SizedBox(
+                      height: 400, // Adjust the height accordingly
+                      //Tries, the height of the wholl box containg the profiles
+                      child: _buildFacultyProfileGrid(selectedFaculty!),
+                    ),
                 ],
               ),
             ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: FloatingActionButton(
-                onPressed: _onChatButtonPressed,
-                child: Icon(Icons.chat),
-                backgroundColor: Color.fromARGB(255, 0, 94, 132), // Match your theme color
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onChatButtonPressed,
+        child: Icon(Icons.chat),
+        backgroundColor: Color.fromARGB(255, 0, 94, 132), // Match your theme color
       ),
     );
   }
@@ -133,30 +144,127 @@ class _FilterPageState extends State<FilterPage> {
     print('Chat button pressed');
   }
 
-  Widget _buildProfileCard(String imagePath, String name, String major, String company) {
-    return Container(
-      width: 160, // Adjust width if needed
-      margin: EdgeInsets.only(right: 16), // Spacing between cards
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50, // Adjust radius if needed
-            backgroundImage: AssetImage(imagePath),
-          ),
-          SizedBox(height: 8),
-          Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
-          Text(major),
-          Text(company),
-          SizedBox(height: 8),
-          ElevatedButton(
-            onPressed: () {
-              // Logic for "message" button
-            },
-            child: Text('Message'),
-          ),
-        ],
+  void _showFacultyOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          padding: EdgeInsets.all(16),
+          children: [
+            _buildFacultyOption('FAFS'),
+            _buildFacultyOption('FAS'),
+            _buildFacultyOption('FHS'),
+            _buildFacultyOption('FM'),
+            _buildFacultyOption('HSON'),
+            _buildFacultyOption('MSFEA'),
+            _buildFacultyOption('OSB'),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFacultyOption(String faculty) {
+    return ListTile(
+      title: Text(faculty),
+      onTap: () {
+        setState(() {
+          selectedFaculty = faculty;
+        });
+        Navigator.pop(context); // Close the bottom sheet
+      },
+    );
+  }
+
+  Widget _buildFacultyProfileGrid(String faculty) {
+    // Dummy data for profiles based on the selected faculty
+    List<Map<String, String>> profiles = [
+      {'name': 'John Doe', 'major': 'Major in CS', 'company': 'Company A'},
+      {'name': 'Jane Smith', 'major': 'Major in EE', 'company': 'Company B'},
+      {'name': 'Alice Johnson', 'major': 'Major in Math', 'company': 'Company C'},
+      {'name': 'Bob Brown', 'major': 'Major in Physics', 'company': 'Company D'},
+      {'name': 'John Doe', 'major': 'Major in CS', 'company': 'Company A'},
+      {'name': 'Jane Smith', 'major': 'Major in EE', 'company': 'Company B'},
+      {'name': 'Alice Johnson', 'major': 'Major in Math', 'company': 'Company C'},
+      {'name': 'Bob Brown', 'major': 'Major in Physics', 'company': 'Company D'},
+      {'name': 'John Doe', 'major': 'Major in CS', 'company': 'Company A'},
+      {'name': 'Jane Smith', 'major': 'Major in EE', 'company': 'Company B'},
+      {'name': 'Alice Johnson', 'major': 'Major in Math', 'company': 'Company C'},
+      {'name': 'Bob Brown', 'major': 'Major in Physics', 'company': 'Company D'},
+    ];
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // Two profiles per row
+        crossAxisSpacing: 6, // Further reduce spacing between cards horizontally
+        mainAxisSpacing: 10, // Further reduce spacing between cards vertically
+        childAspectRatio: 0.72, // Slightly reduce aspect ratio for more vertical space
+      ),
+      itemCount: profiles.length,
+      itemBuilder: (context, index) {
+        return _buildProfileCard(
+          'assets/profileUser.jpg',
+          profiles[index]['name']!,
+          profiles[index]['major']!,
+          profiles[index]['company']!,
+          showMessageButton: true,
+        );
+      },
+    );
+
+  }
+
+  Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = true}) {
+    return ClipRect(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Container(
+            padding: EdgeInsets.all(4.0), // Reduce padding to 4.0
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: CircleAvatar(
+                    radius: constraints.maxHeight * 0.23, // Slightly smaller avatar
+                    backgroundImage: AssetImage(imagePath),
+                  ),
+                ),
+                SizedBox(height: 3), // Reduce space between elements
+                Flexible(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)), // Slightly smaller text
+                      Text(major, style: TextStyle(fontSize: 11)), // Reduce text size
+                      Text(company, style: TextStyle(fontSize: 11)),
+                    ],
+                  ),
+                ),
+                if (showMessageButton)
+                  Flexible(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 3.0), // Reduce padding for button
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Logic for "message" button
+                        },
+                        child: Text('Message', style: TextStyle(fontSize: 11)), // Slightly smaller button text
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+
+
+
 }
