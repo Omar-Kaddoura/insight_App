@@ -28,6 +28,34 @@ class FilterPage extends StatefulWidget {
 class _FilterPageState extends State<FilterPage> {
   String? selectedFilter;
   String? selectedFaculty;
+  String? selectedMajor;
+
+  List<String> majors = [
+    'Agri-Business', 'Agri-culture', 'Applied Mathematics', 'Arabic', 'Archaeology',
+    'Architecture', 'Art History', 'Biology', 'Business Administration', 'Chemical Engineering',
+    'Chemistry', 'Civil and Environmental Engineering', 'Computer and Communications Engineering',
+    'Computer Science', 'Construction Engineering', 'Earth Sciences', 'Electrical and Computer Engineering',
+    'Elementary Education', 'English Language', 'English Literature', 'Environmental Health',
+    'Food Sciences and Management', 'Graphic Design', 'Health Communication', 'History',
+    'Industrial Engineering', 'Landscape Architecture (BLA)', 'Mathematics', 'Mechanical Engineering',
+    'Media and Communication', 'Medical Imaging Sciences', 'Medical Laboratory Sciences', 'Nursing',
+    'Nutrition and Dietetics', 'Philosophy', 'Physics', 'Political Studies', 'Psychology',
+    'Public Administration', 'Sociology-Anthropology', 'Statistics', 'Studio Arts'
+  ];
+
+  Map<String, List<Map<String, String>>> majorProfiles = {
+    'Computer Science': [
+      {'name': 'Alice Green', 'major': 'Computer Science', 'company': 'Tech Corp'},
+      {'name': 'Bob White', 'major': 'Computer Science', 'company': 'Innovate Inc'},
+      // Add more profiles as needed
+    ],
+    'Electrical and Computer Engineering': [
+      {'name': 'Carol Blue', 'major': 'Electrical and Computer Engineering', 'company': 'ElectroTech'},
+      {'name': 'David Black', 'major': 'Electrical and Computer Engineering', 'company': 'Tech Solutions'},
+      // Add more profiles as needed
+    ],
+    // Add other majors and their profiles here
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +84,6 @@ class _FilterPageState extends State<FilterPage> {
               ),
             ),
             SizedBox(height: 20),
-//Tried for the horz
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -76,7 +103,6 @@ class _FilterPageState extends State<FilterPage> {
                     },
                   ),
                   SizedBox(height: 20),
-//Tried, for the Search by name box
                   // Filter Settings Dropdown Menu
                   DropdownButton<String>(
                     value: selectedFilter,
@@ -107,9 +133,11 @@ class _FilterPageState extends State<FilterPage> {
                       setState(() {
                         selectedFilter = value!;
                         selectedFaculty = null; // Reset the selected faculty when a new filter is chosen
-
+                        selectedMajor = null; // Reset the selected major when a new filter is chosen
                         if (selectedFilter == "Search by Faculty") {
                           _showFacultyOptions();
+                        } else if (selectedFilter == "Search by Major") {
+                          _showMajorOptions();
                         }
                       });
                     },
@@ -117,13 +145,17 @@ class _FilterPageState extends State<FilterPage> {
                     underline: Container(),
                   ),
                   SizedBox(height: 20),
-//Tried, for the drop down
                   // Display profiles based on the selected faculty
                   if (selectedFaculty != null)
                     SizedBox(
                       height: 400, // Adjust the height accordingly
-                      //Tries, the height of the wholl box containg the profiles
                       child: _buildFacultyProfileGrid(selectedFaculty!),
+                    ),
+                  // Display profiles based on the selected major
+                  if (selectedMajor != null)
+                    SizedBox(
+                      height: 400, // Adjust the height accordingly
+                      child: _buildMajorProfileGrid(selectedMajor!),
                     ),
                 ],
               ),
@@ -164,12 +196,35 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
+  void _showMajorOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          padding: EdgeInsets.all(16),
+          children: majors.map((major) {
+            return ListTile(
+              title: Text(major),
+              onTap: () {
+                setState(() {
+                  selectedMajor = major;
+                });
+                Navigator.pop(context); // Close the bottom sheet
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
   Widget _buildFacultyOption(String faculty) {
     return ListTile(
       title: Text(faculty),
       onTap: () {
         setState(() {
           selectedFaculty = faculty;
+          selectedMajor = null; // Clear major when faculty is selected
         });
         Navigator.pop(context); // Close the bottom sheet
       },
@@ -196,9 +251,9 @@ class _FilterPageState extends State<FilterPage> {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2, // Two profiles per row
-        crossAxisSpacing: 6, // Further reduce spacing between cards horizontally
-        mainAxisSpacing: 10, // Further reduce spacing between cards vertically
-        childAspectRatio: 0.72, // Slightly reduce aspect ratio for more vertical space
+        crossAxisSpacing: 6, // Reduce spacing between cards horizontally
+        mainAxisSpacing: 10, // Reduce spacing between cards vertically
+        childAspectRatio: 0.72, // Adjust aspect ratio for vertical space
       ),
       itemCount: profiles.length,
       itemBuilder: (context, index) {
@@ -211,7 +266,29 @@ class _FilterPageState extends State<FilterPage> {
         );
       },
     );
+  }
 
+  Widget _buildMajorProfileGrid(String major) {
+    List<Map<String, String>> profiles = majorProfiles[major] ?? [];
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, // Two profiles per row
+        crossAxisSpacing: 6, // Reduce spacing between cards horizontally
+        mainAxisSpacing: 10, // Reduce spacing between cards vertically
+        childAspectRatio: 0.72, // Adjust aspect ratio for vertical space
+      ),
+      itemCount: profiles.length,
+      itemBuilder: (context, index) {
+        return _buildProfileCard(
+          'assets/profileUser.jpg',
+          profiles[index]['name']!,
+          profiles[index]['major']!,
+          profiles[index]['company']!,
+          showMessageButton: true,
+        );
+      },
+    );
   }
 
   Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = true}) {
@@ -219,7 +296,7 @@ class _FilterPageState extends State<FilterPage> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Container(
-            padding: EdgeInsets.all(4.0), // Reduce padding to 4.0
+            padding: EdgeInsets.all(4.0), // Reduce padding
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,20 +304,38 @@ class _FilterPageState extends State<FilterPage> {
                 Flexible(
                   flex: 4,
                   child: CircleAvatar(
-                    radius: constraints.maxHeight * 0.23, // Slightly smaller avatar
+                    radius: constraints.maxHeight * 0.23, // Adjust avatar size
                     backgroundImage: AssetImage(imagePath),
                   ),
                 ),
-                SizedBox(height: 3), // Reduce space between elements
+                SizedBox(height: 3), // Adjust space between elements
                 Flexible(
                   flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)), // Slightly smaller text
-                      Text(major, style: TextStyle(fontSize: 11)), // Reduce text size
-                      Text(company, style: TextStyle(fontSize: 11)),
+                      // Name
+                      Text(
+                        name,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        overflow: TextOverflow.ellipsis, // Handle overflow
+                        maxLines: 1, // Limit to one line
+                      ),
+                      // Major
+                      Text(
+                        major,
+                        style: TextStyle(fontSize: 11),
+                        overflow: TextOverflow.ellipsis, // Handle overflow
+                        maxLines: 1, // Limit to one line
+                      ),
+                      // Company
+                      Text(
+                        company,
+                        style: TextStyle(fontSize: 11),
+                        overflow: TextOverflow.ellipsis, // Handle overflow
+                        maxLines: 1, // Limit to one line
+                      ),
                     ],
                   ),
                 ),
@@ -248,12 +343,12 @@ class _FilterPageState extends State<FilterPage> {
                   Flexible(
                     flex: 2,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 3.0), // Reduce padding for button
+                      padding: const EdgeInsets.only(top: 3.0), // Adjust padding for button
                       child: ElevatedButton(
                         onPressed: () {
                           // Logic for "message" button
                         },
-                        child: Text('Message', style: TextStyle(fontSize: 11)), // Slightly smaller button text
+                        child: Text('Message', style: TextStyle(fontSize: 11)),
                       ),
                     ),
                   ),
@@ -264,7 +359,5 @@ class _FilterPageState extends State<FilterPage> {
       ),
     );
   }
-
-
 
 }
