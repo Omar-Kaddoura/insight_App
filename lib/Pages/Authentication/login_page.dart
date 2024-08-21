@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
     final result = await _authService.login(email, password);
-    print(result);
+    // print(result);
 
     if (result != null) {
       final token = result['token'];

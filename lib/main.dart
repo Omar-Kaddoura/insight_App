@@ -9,7 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
 
   // Initialize secure storage
   final _storage = FlutterSecureStorage();
@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const WelcomePage(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        '/student_home': (context) => HomePageWithNavigation(),
-        '/admin_home': (context) => AdminHome(),
+        '/student_home': (context) => const HomePageWithNavigation(),
+        '/admin_home': (context) => const AdminHome(),
       },
     );
   }

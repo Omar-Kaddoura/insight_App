@@ -18,6 +18,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      print(data);
       // print("tokens????");
       return {
         'token': data['token'],
