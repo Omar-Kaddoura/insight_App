@@ -5,6 +5,7 @@ import 'package:insight/BottomNavigationBarPages/Shop.dart';
 import 'package:insight/BottomNavigationBarPages/Profile.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:insight/messaging/user_list.dart';
+import 'package:insight/components/up_logo.dart';
 
 class HomePageWithNavigation extends StatefulWidget {
   const HomePageWithNavigation({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(),
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {

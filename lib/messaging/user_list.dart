@@ -22,7 +22,7 @@ class _UsersListScreenState extends State<UsersListScreen> {
 
   Future<void> _fetchUsers() async {
     final email = await _storage.read(key: 'email');
-    print(email);
+    // print(email);
     if (email == null) {
       setState(() {
         _isLoading = false;
@@ -72,7 +72,14 @@ class _UsersListScreenState extends State<UsersListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Users List'),
+        automaticallyImplyLeading: false,  // Remove the back arrow
+        flexibleSpace: FlexibleSpaceBar(
+          centerTitle: true,
+          title: Text(
+            'Users List',
+            style: TextStyle(fontSize: 20, color: Colors.black),
+          ),
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
