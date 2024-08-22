@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:insight/BottomNavigationBarPages/News.dart';
+import 'package:insight/BottomNavigationBarPages/News/News.dart';
 import 'package:insight/BottomNavigationBarPages/Social.dart';
 import 'package:insight/BottomNavigationBarPages/Shop.dart';
 import 'package:insight/BottomNavigationBarPages/Profile.dart';

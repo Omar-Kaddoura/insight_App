@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class News extends StatelessWidget {
-  News({super.key});
+class News extends StatefulWidget {
+  const News({super.key});
 
-  final List<Map<String, String>> newsItems = [
-    {
-      'title': 'News Title 1',
-      'date': '2024-07-01',
-      'image': 'assets/images/news.jpeg',
-    },
-    {
-      'title': 'News Title 2',
-      'date': '2024-06-30',
-      'image': 'assets/images/event.jpeg',
-    },
-    {
-      'title': 'News Title 3',
-      'date': '2024-06-29',
-      'image': 'assets/images/event.jpeg',
-    },
-  ];
+  @override
+  _NewsState createState() => _NewsState();
+}
+
+class _NewsState extends State<News> {
+  List<Map<String, dynamic>> newsItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchNews();
+  }
+
+  Future<void> fetchNews() async {
+    final response = await http.get(Uri.parse('http://192.168.0.124:5000/api/users/getAllNews'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      setState(() {
+        newsItems = data.map((item) => {
+          'title': item['title'],
+          'date': item['date'],
+          'image': 'assets/images/news.jpeg',
+        }).toList();
+      });
+    } else {
+      throw Exception('Failed to load news');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +55,7 @@ class News extends StatelessWidget {
                   child: Text(
                     'Top stories',
                     style: TextStyle(
-                      fontSize: screenWidth * 0.04, // Font size relative to screen width
+                      fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 0, 94, 132),
                     ),
@@ -58,10 +72,10 @@ class News extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset(
+                      Image.network(
                         news['image']!,
                         width: screenWidth,
-                        height: screenHeight * 0.25, // Image height relative to screen height
+                        height: screenHeight * 0.25,
                         fit: BoxFit.cover,
                       ),
                       Padding(
@@ -72,7 +86,7 @@ class News extends StatelessWidget {
                             Text(
                               news['title']!,
                               style: TextStyle(
-                                fontSize: screenWidth * 0.035, // Font size relative to screen width
+                                fontSize: screenWidth * 0.035,
                                 fontWeight: FontWeight.bold,
                                 color: Color.fromARGB(255, 0, 94, 132),
                               ),
@@ -80,7 +94,7 @@ class News extends StatelessWidget {
                             Text(
                               news['date']!,
                               style: TextStyle(
-                                fontSize: screenWidth * 0.025, // Font size relative to screen width
+                                fontSize: screenWidth * 0.025,
                                 color: Colors.grey,
                               ),
                             ),
