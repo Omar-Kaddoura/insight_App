@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 
-class ResultsPage extends StatelessWidget {
+class ResultsPage extends StatefulWidget {
   final Map<String, dynamic> filters;
 
   ResultsPage({required this.filters});
 
   @override
-  Widget build(BuildContext context) {
-    // Filter profiles based on the provided filters
-    List<Map<String, String>> filteredProfiles = _applyFilters();
+  _ResultsPageState createState() => _ResultsPageState();
+}
 
+class _ResultsPageState extends State<ResultsPage> {
+  TextEditingController _searchController = TextEditingController();
+  late List<Map<String, String>> filteredProfiles;
+
+  @override
+  void initState() {
+    super.initState();
+    filteredProfiles = _applyFilters();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Filtered Results'),
@@ -19,6 +30,7 @@ class ResultsPage extends StatelessWidget {
         child: Column(
           children: [
             TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search by Name',
                 prefixIcon: Icon(Icons.search),
@@ -27,7 +39,9 @@ class ResultsPage extends StatelessWidget {
                 ),
               ),
               onChanged: (text) {
-                // Handle search by name
+                setState(() {
+                  filteredProfiles = _applyFilters();
+                });
               },
             ),
             SizedBox(height: 20),
@@ -76,24 +90,25 @@ class ResultsPage extends StatelessWidget {
       {'name': 'Olivia Clark', 'major': 'Chemical Engineering', 'company': 'ChemicalsInc', 'status': 'Alumnus', 'faculty': 'FAFS'},
       // Add more profiles as needed
     ];
-
     return profiles.where((profile) {
       bool matches = true;
-      if (filters['faculty'] != null) {
-        matches &= profile['faculty'] == filters['faculty'];
+      if (widget.filters['faculty'] != null) {
+        matches &= profile['faculty'] == widget.filters['faculty'];
       }
-      if (filters['major'] != null) {
-        matches &= profile['major'] == filters['major'];
+      if (widget.filters['major'] != null) {
+        matches &= profile['major'] == widget.filters['major'];
       }
-      if (filters['status'] != null) {
-        matches &= profile['status'] == filters['status'];
+      if (widget.filters['status'] != null) {
+        matches &= profile['status'] == widget.filters['status'];
       }
-      if (filters['company'] != null) {
-        matches &= profile['company']!.toLowerCase().contains(filters['company']!.toLowerCase());
+      if (widget.filters['company'] != null) {
+        matches &= profile['company']!.toLowerCase().contains(widget.filters['company']!.toLowerCase());
+      }
+      if (_searchController.text.isNotEmpty) {
+        matches &= profile['name']!.toLowerCase().contains(_searchController.text.toLowerCase());
       }
       return matches;
     }).toList();
-
   }
 
   Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = false}) {
