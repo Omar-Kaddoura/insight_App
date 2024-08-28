@@ -66,6 +66,7 @@ flutter:
     - assets/images/news.jpeg
     - assets/images/defaultProfile.JPG
     - assets/images/profileUser.jpg
+    - assets/images/shopcart.png
 
 
   # The following line ensures that the Material Icons font is

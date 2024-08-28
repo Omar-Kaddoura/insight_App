@@ -7,6 +7,7 @@ import 'Filter_Page.dart';
 
 import 'bottom_navigation.dart';
 import 'up_logo.dart'; // Import the custom app bar
+import 'ShopPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
-      Center(child: Text('Shops Page Content')),
+      ShopPage(),
       FilterPage(),
       ProfilePage(), // Add the ProfilePage here
     ];
