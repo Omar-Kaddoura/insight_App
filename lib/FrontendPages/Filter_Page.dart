@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'results_page.dart'; // Import your results page
 
 void main() {
   runApp(MyApp());
@@ -26,46 +27,13 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  String? selectedFilter;
   String? selectedFaculty;
   String? selectedMajor;
   String? companySearchQuery;
   String? selectedStatus;
-  String nameSearchQuery = '';
   bool showCompanySearchField = false;
 
-  List<Map<String, String>> profiles = [
-    {
-      'name': 'Alice Green',
-      'major': 'Computer Science',
-      'company': 'Tech Corp',
-      'faculty': 'MSFEA',
-      'status': 'Undergrad',
-    },
-    {
-      'name': 'Bob White',
-      'major': 'Computer Science',
-      'company': 'Innovate Inc',
-      'faculty': 'MSFEA',
-      'status': 'Grad',
-    },
-    {
-      'name': 'Carol Blue',
-      'major': 'Electrical and Computer Engineering',
-      'company': 'ElectroTech',
-      'faculty': 'MSFEA',
-      'status': 'Alumnus',
-    },
-    {
-      'name': 'David Black',
-      'major': 'Electrical and Computer Engineering',
-      'company': 'Tech Solutions',
-      'faculty': 'MSFEA',
-      'status': 'Undergrad',
-    },
-    // Add more profiles as needed
-  ];
-
+  Set<String> selectedFilters = {};
   List<String> majors = [
     'Agri-Business', 'Agri-culture', 'Applied Mathematics', 'Arabic', 'Archaeology',
     'Architecture', 'Art History', 'Biology', 'Business Administration', 'Chemical Engineering',
@@ -77,6 +45,24 @@ class _FilterPageState extends State<FilterPage> {
     'Media and Communication', 'Medical Imaging Sciences', 'Medical Laboratory Sciences', 'Nursing',
     'Nutrition and Dietetics', 'Philosophy', 'Physics', 'Political Studies', 'Psychology',
     'Public Administration', 'Sociology-Anthropology', 'Statistics', 'Studio Arts'
+  ];
+  List<Map<String, String>> profiles = [
+    {'name': 'Alice Johnson', 'major': 'Computer Science', 'company': 'TechCorp', 'status': 'Undergrad', 'faculty': 'FAFS'},
+    {'name': 'Bob Smith', 'major': 'Electrical Engineering', 'company': 'ElectroInc', 'status': 'Grad', 'faculty': 'FAS'},
+    {'name': 'Carol White', 'major': 'Mechanical Engineering', 'company': 'MechSolutions', 'status': 'Alumnus', 'faculty': 'FHS'},
+    {'name': 'David Brown', 'major': 'Civil Engineering', 'company': 'BuildIt', 'status': 'Undergrad', 'faculty': 'FM'},
+    {'name': 'Eve Davis', 'major': 'Chemical Engineering', 'company': 'ChemTech', 'status': 'Grad', 'faculty': 'HSON'},
+    {'name': 'Frank Miller', 'major': 'Computer Science', 'company': 'CodeWorks', 'status': 'Alumnus', 'faculty': 'MSFEA'},
+    {'name': 'Grace Lee', 'major': 'Electrical Engineering', 'company': 'PowerGrid', 'status': 'Undergrad', 'faculty': 'OSB'},
+    {'name': 'Hank Wilson', 'major': 'Mechanical Engineering', 'company': 'MachineryCo', 'status': 'Grad', 'faculty': 'FAFS'},
+    {'name': 'Ivy Taylor', 'major': 'Civil Engineering', 'company': 'StructureBuilders', 'status': 'Alumnus', 'faculty': 'FAS'},
+    {'name': 'Jack Anderson', 'major': 'Chemical Engineering', 'company': 'ReactorsLtd', 'status': 'Undergrad', 'faculty': 'FHS'},
+    {'name': 'Karen Thomas', 'major': 'Computer Science', 'company': 'DevHouse', 'status': 'Grad', 'faculty': 'FM'},
+    {'name': 'Leo Martinez', 'major': 'Electrical Engineering', 'company': 'CircuitDesign', 'status': 'Alumnus', 'faculty': 'HSON'},
+    {'name': 'Mona Garcia', 'major': 'Mechanical Engineering', 'company': 'EngineMasters', 'status': 'Undergrad', 'faculty': 'MSFEA'},
+    {'name': 'Nate Robinson', 'major': 'Civil Engineering', 'company': 'CivilWorks', 'status': 'Grad', 'faculty': 'OSB'},
+    {'name': 'Olivia Clark', 'major': 'Chemical Engineering', 'company': 'ChemicalsInc', 'status': 'Alumnus', 'faculty': 'FAFS'},
+    // Add more profiles as needed
   ];
 
   @override
@@ -94,8 +80,8 @@ class _FilterPageState extends State<FilterPage> {
                   return index % 2 == 0
                       ? Row(
                     children: [
-                      _buildProfileCard('assets/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A', showMessageButton: true),
-                      _buildProfileCard('assets/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B', showMessageButton: true),
+                      _buildProfileCard('assets/images/profileUser.jpg', 'John Doe', 'Major in CS', 'Company A', showMessageButton: true),
+                      _buildProfileCard('assets/images/profileUser.jpg', 'Jane Smith', 'Major in EE', 'Company B', showMessageButton: true),
                     ],
                   )
                       : SizedBox(width: 0);
@@ -117,14 +103,12 @@ class _FilterPageState extends State<FilterPage> {
                       ),
                     ),
                     onChanged: (text) {
-                      setState(() {
-                        nameSearchQuery = text;
-                      });
+                      // Logic to search by name in the database
                     },
                   ),
                   SizedBox(height: 20),
                   DropdownButton<String>(
-                    value: selectedFilter,
+                    value: null,
                     isExpanded: true,
                     items: [
                       DropdownMenuItem(value: "Search by Faculty", child: Text("Search by Faculty")),
@@ -136,18 +120,20 @@ class _FilterPageState extends State<FilterPage> {
                     ],
                     onChanged: (value) {
                       setState(() {
-                        selectedFilter = value!;
-                        selectedFaculty = null;
-                        selectedMajor = null;
-                        selectedStatus = null;
-                        companySearchQuery = null;
-                        showCompanySearchField = value == "Search by Company";
-                        if (selectedFilter == "Search by Faculty") {
-                          _showFacultyOptions();
-                        } else if (selectedFilter == "Search by Major") {
-                          _showMajorOptions();
-                        } else if (selectedFilter == "Search by Undergrad" || selectedFilter == "Search by Grad" || selectedFilter == "Search by Alumnus") {
-                          _setSelectedStatus(selectedFilter!);
+                        if (value != null) {
+                          if (value.contains("Faculty")) {
+                            _showFacultyOptions();
+                          } else if (value.contains("Major")) {
+                            _showMajorOptions();
+                          } else if (value.contains("Company")) {
+                            showCompanySearchField = true;
+                          } else if (value.contains("Undergrad")) {
+                            selectedFilters.add("Undergrad");
+                          } else if (value.contains("Grad")) {
+                            selectedFilters.add("Grad");
+                          } else if (value.contains("Alumnus")) {
+                            selectedFilters.add("Alumnus");
+                          }
                         }
                       });
                     },
@@ -169,46 +155,58 @@ class _FilterPageState extends State<FilterPage> {
                           companySearchQuery = text;
                         });
                       },
+
                       onSubmitted: (text) {
+                        selectedFilters.add(text);
+
                         setState(() {
                           showCompanySearchField = false;
                         });
                       },
                     ),
                   SizedBox(height: 20),
-                  if (selectedFaculty != null)
-                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByFaculty(selectedFaculty!))),
-                  if (selectedMajor != null)
-                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByMajor(selectedMajor!))),
-                  if (selectedStatus != null)
-                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByStatus(selectedStatus!))),
-                  if (companySearchQuery != null && companySearchQuery!.isNotEmpty)
-                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByCompany(companySearchQuery!))),
-                  if (nameSearchQuery.isNotEmpty)
-                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByName(nameSearchQuery))),
-                  if (nameSearchQuery.isEmpty && selectedFilter == null && selectedFaculty == null && selectedMajor == null && selectedStatus == null && companySearchQuery == null)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(
-                        child: Text('No filters applied. Please select a filter.'),
-                      ),
-                    ),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: selectedFilters.map((filter) {
+                      return Chip(
+                        label: Text(filter),
+                        onDeleted: () {
+                          setState(() {
+                            selectedFilters.remove(filter);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResultsPage(
+                            filters: {
+                              'status': selectedFilters.contains("Undergrad") ? "Undergrad" :
+                              selectedFilters.contains("Grad") ? "Grad" :
+                              selectedFilters.contains("Alumnus") ? "Alumnus" : null,
+                              'faculty': selectedFaculty,
+                              'major': selectedMajor,
+                              'company': companySearchQuery,
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('Search'),
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onChatButtonPressed,
-        child: Icon(Icons.chat),
-        backgroundColor: Color.fromARGB(255, 0, 94, 132),
-      ),
     );
-  }
-
-  void _onChatButtonPressed() {
-    print('Chat button pressed');
   }
 
   void _showFacultyOptions() {
@@ -243,6 +241,7 @@ class _FilterPageState extends State<FilterPage> {
               onTap: () {
                 setState(() {
                   selectedMajor = major;
+                  selectedFilters.add(major);
                 });
                 Navigator.pop(context);
               },
@@ -253,38 +252,13 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
-  void _setSelectedStatus(String filter) {
-    setState(() {
-      selectedStatus = filter.split(' ')[2];
-    });
-  }
-
-  List<Map<String, String>> _filterProfilesByFaculty(String faculty) {
-    return profiles.where((profile) => profile['faculty'] == faculty).toList();
-  }
-
-  List<Map<String, String>> _filterProfilesByMajor(String major) {
-    return profiles.where((profile) => profile['major'] == major).toList();
-  }
-
-  List<Map<String, String>> _filterProfilesByStatus(String status) {
-    return profiles.where((profile) => profile['status'] == status).toList();
-  }
-
-  List<Map<String, String>> _filterProfilesByCompany(String company) {
-    return profiles.where((profile) => profile['company']!.toLowerCase().contains(company.toLowerCase())).toList();
-  }
-
-  List<Map<String, String>> _filterProfilesByName(String name) {
-    return profiles.where((profile) => profile['name']!.toLowerCase().contains(name.toLowerCase())).toList();
-  }
-
-  ListTile _buildFacultyOption(String faculty) {
+  Widget _buildFacultyOption(String faculty) {
     return ListTile(
       title: Text(faculty),
       onTap: () {
         setState(() {
           selectedFaculty = faculty;
+          selectedFilters.add(faculty);
         });
         Navigator.pop(context);
       },
@@ -293,55 +267,21 @@ class _FilterPageState extends State<FilterPage> {
 
   Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = false}) {
     return Card(
-      elevation: 4.0,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage(imagePath),
-          ),
-          SizedBox(height: 10),
-          Text(name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          SizedBox(height: 5),
-          Text(major, style: TextStyle(fontSize: 16)),
-          SizedBox(height: 5),
-          Text(company, style: TextStyle(fontSize: 16)),
+          Image.asset(imagePath, height: 100, width: 100),
+          Text(name),
+          Text(major),
+          Text(company),
           if (showMessageButton)
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: ElevatedButton(
-                onPressed: () {},
-                child: Text('Message'),
-              ),
+            ElevatedButton(
+              onPressed: () {
+                // Handle message button press
+              },
+              child: Text('Message'),
             ),
         ],
       ),
-    );
-  }
-
-  Widget _buildProfileGrid(List<Map<String, String>> profiles) {
-    if (profiles.isEmpty) {
-      return Center(child: Text('No profiles found.'));
-    }
-
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 6,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.72,
-      ),
-      itemCount: profiles.length,
-      itemBuilder: (context, index) {
-        return _buildProfileCard(
-          'assets/profileUser.jpg',
-          profiles[index]['name']!,
-          profiles[index]['major']!,
-          profiles[index]['company']!,
-          showMessageButton: true,
-        );
-      },
     );
   }
 }
