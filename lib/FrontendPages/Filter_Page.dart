@@ -31,6 +31,7 @@ class _FilterPageState extends State<FilterPage> {
   String? selectedMajor;
   String? companySearchQuery;
   String? selectedStatus;
+  String nameSearchQuery = '';
   bool showCompanySearchField = false;
 
   List<Map<String, String>> profiles = [
@@ -116,7 +117,9 @@ class _FilterPageState extends State<FilterPage> {
                       ),
                     ),
                     onChanged: (text) {
-                      // Logic to search by name in the database
+                      setState(() {
+                        nameSearchQuery = text;
+                      });
                     },
                   ),
                   SizedBox(height: 20),
@@ -181,6 +184,15 @@ class _FilterPageState extends State<FilterPage> {
                     SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByStatus(selectedStatus!))),
                   if (companySearchQuery != null && companySearchQuery!.isNotEmpty)
                     SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByCompany(companySearchQuery!))),
+                  if (nameSearchQuery.isNotEmpty)
+                    SizedBox(height: 400, child: _buildProfileGrid(_filterProfilesByName(nameSearchQuery))),
+                  if (nameSearchQuery.isEmpty && selectedFilter == null && selectedFaculty == null && selectedMajor == null && selectedStatus == null && companySearchQuery == null)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(
+                        child: Text('No filters applied. Please select a filter.'),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -243,35 +255,8 @@ class _FilterPageState extends State<FilterPage> {
 
   void _setSelectedStatus(String filter) {
     setState(() {
-      if (filter == "Search by Undergrad") {
-        selectedStatus = "Undergrad";
-      } else if (filter == "Search by Grad") {
-        selectedStatus = "Grad";
-      } else if (filter == "Search by Alumnus") {
-        selectedStatus = "Alumnus";
-      }
+      selectedStatus = filter.split(' ')[2];
     });
-  }
-
-  Widget _buildProfileGrid(List<Map<String, String>> filteredProfiles) {
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 6,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.72,
-      ),
-      itemCount: filteredProfiles.length,
-      itemBuilder: (context, index) {
-        return _buildProfileCard(
-          'assets/profileUser.jpg',
-          filteredProfiles[index]['name']!,
-          filteredProfiles[index]['major']!,
-          filteredProfiles[index]['company']!,
-          showMessageButton: true,
-        );
-      },
-    );
   }
 
   List<Map<String, String>> _filterProfilesByFaculty(String faculty) {
@@ -288,6 +273,10 @@ class _FilterPageState extends State<FilterPage> {
 
   List<Map<String, String>> _filterProfilesByCompany(String company) {
     return profiles.where((profile) => profile['company']!.toLowerCase().contains(company.toLowerCase())).toList();
+  }
+
+  List<Map<String, String>> _filterProfilesByName(String name) {
+    return profiles.where((profile) => profile['name']!.toLowerCase().contains(name.toLowerCase())).toList();
   }
 
   ListTile _buildFacultyOption(String faculty) {
@@ -328,6 +317,31 @@ class _FilterPageState extends State<FilterPage> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProfileGrid(List<Map<String, String>> profiles) {
+    if (profiles.isEmpty) {
+      return Center(child: Text('No profiles found.'));
+    }
+
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 6,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.72,
+      ),
+      itemCount: profiles.length,
+      itemBuilder: (context, index) {
+        return _buildProfileCard(
+          'assets/profileUser.jpg',
+          profiles[index]['name']!,
+          profiles[index]['major']!,
+          profiles[index]['company']!,
+          showMessageButton: true,
+        );
+      },
     );
   }
 }
