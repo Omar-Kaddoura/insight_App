@@ -35,67 +35,91 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           key: _formKey,
           child: ListView(
             children: [
-              _buildTextField(
-                controller: _nameController,
-                label: "Name",
+              _buildCategoryTile(
+                title: "Personal Information",
                 icon: Icons.person,
+                children: [
+                  _buildTextField(
+                    controller: _nameController,
+                    label: "Name",
+                    icon: Icons.person,
+                  ),
+                  _buildDropdown(
+                    value: _gender,
+                    label: "Gender",
+                    items: ["Male", "Female"],
+                    icon: Icons.wc,
+                    onChanged: (value) => setState(() => _gender = value),
+                  ),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: "Email",
+                    icon: Icons.email,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                ],
               ),
-              _buildDropdown(
-                value: _studentStatus,
-                label: "Status",
-                items: ["Alumni", "Current Student"],
+              _buildCategoryTile(
+                title: "Educational Background",
                 icon: Icons.school,
-                onChanged: (value) => setState(() => _studentStatus = value),
+                children: [
+                  _buildDropdown(
+                    value: _studentStatus,
+                    label: "Status",
+                    items: ["Alumni", "Current Student"],
+                    icon: Icons.school,
+                    onChanged: (value) => setState(() => _studentStatus = value),
+                  ),
+                  _buildDropdown(
+                    value: _studies,
+                    label: "Studies",
+                    items: ["Undergrad", "Grad", "PhD"],
+                    icon: Icons.school_outlined,
+                    onChanged: (value) => setState(() => _studies = value),
+                  ),
+                ],
               ),
-              _buildDropdown(
-                value: _gender,
-                label: "Gender",
-                items: ["Male", "Female"],
-                icon: Icons.wc,
-                onChanged: (value) => setState(() => _gender = value),
-              ),
-              _buildTextField(
-                controller: _emailController,
-                label: "Email",
-                icon: Icons.email,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              _buildDropdown(
-                value: _studies,
-                label: "Studies",
-                items: ["Undergrad", "Grad", "PhD"],
-                icon: Icons.school_outlined,
-                onChanged: (value) => setState(() => _studies = value),
-              ),
-              _buildTextField(
-                controller: _occupationController,
-                label: "Occupation",
+              _buildCategoryTile(
+                title: "Work Information",
                 icon: Icons.work,
+                children: [
+                  _buildTextField(
+                    controller: _occupationController,
+                    label: "Occupation",
+                    icon: Icons.work,
+                  ),
+                  _buildTextField(
+                    controller: _jobTitleController,
+                    label: "Job Title",
+                    icon: Icons.title,
+                  ),
+                  _buildTextField(
+                    controller: _jobDescriptionController,
+                    label: "Job Description",
+                    icon: Icons.description,
+                  ),
+                  _buildTextField(
+                    controller: _companyController,
+                    label: "Company",
+                    icon: Icons.business,
+                  ),
+                ],
               ),
-              _buildTextField(
-                controller: _jobTitleController,
-                label: "Job Title",
-                icon: Icons.title,
-              ),
-              _buildTextField(
-                controller: _jobDescriptionController,
-                label: "Job Description",
-                icon: Icons.description,
-              ),
-              _buildTextField(
-                controller: _companyController,
-                label: "Company",
-                icon: Icons.business,
-              ),
-              _buildTextField(
-                controller: _linkedInController,
-                label: "LinkedIn",
-                icon: Icons.linked_camera,
-              ),
-              _buildTextField(
-                controller: _instagramController,
-                label: "Instagram",
-                icon: Icons.camera,
+              _buildCategoryTile(
+                title: "Social Media Links",
+                icon: Icons.link,
+                children: [
+                  _buildTextField(
+                    controller: _linkedInController,
+                    label: "LinkedIn",
+                    icon: Icons.linked_camera,
+                  ),
+                  _buildTextField(
+                    controller: _instagramController,
+                    label: "Instagram",
+                    icon: Icons.camera,
+                  ),
+                ],
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -119,6 +143,32 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryTile({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 4,
+        child: ExpansionTile(
+          leading: Icon(icon, color: Color.fromARGB(255, 0, 94, 132)),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 0, 94, 132),
+            ),
+          ),
+          children: children,
         ),
       ),
     );
