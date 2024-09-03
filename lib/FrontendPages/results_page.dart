@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'PublicProfilePage.dart';
 
 class ResultsPage extends StatefulWidget {
   final Map<String, dynamic> filters;
@@ -112,21 +113,30 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 
   Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = false}) {
-    return Card(
-      child: Column(
-        children: [
-          Image.asset(imagePath, height: 100, width: 100),
-          Text(name),
-          Text(major),
-          Text(company),
-          if (showMessageButton)
-            ElevatedButton(
-              onPressed: () {
-                // Handle message button press
-              },
-              child: Text('Message'),
-            ),
-        ],
+    return InkWell(
+      onTap: () {
+        // Navigate to another page when the card is tapped
+        Navigator.push(
+          context,          //TODO: open the page for the specific user, the following public profile page is only for one user
+          MaterialPageRoute(builder: (context) => PublicProfilePage()),
+        );
+      },
+      child: Card(
+        child: Column(
+          children: [
+            Image.asset(imagePath, height: 100, width: 100),
+            Text(name),
+            Text(major),
+            Text(company),
+            if (showMessageButton)
+              ElevatedButton(
+                onPressed: () {
+                  // Handle message button press
+                },
+                child: Text('Message'),
+              ),
+          ],
+        ),
       ),
     );
   }
