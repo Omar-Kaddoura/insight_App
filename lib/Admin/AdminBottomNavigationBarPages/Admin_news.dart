@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class AdminNews extends StatefulWidget {
   @override
@@ -11,6 +16,28 @@ class _AdminNews extends State<AdminNews> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  var _imageFile;
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+  Future<String?> _uploadImage(String title) async {
+  if (_imageFile == null) return null;
+
+  try {
+    final storageRef = FirebaseStorage.instance.ref().child('$title/front/${_imageFile!.uri.pathSegments.last}').putFile(_imageFile);
+    
+  } catch (e) {
+    print('Error uploading image: $e');
+    return null;
+  }
+}
 
   Future<void> _submitNews() async {
     final String title = _titleController.text;
@@ -23,15 +50,17 @@ class _AdminNews extends State<AdminNews> {
       );
       return;
     }
+    final imageUrl = await _uploadImage(title);
 
     final newsData = {
       'title': title,
       'date': date,
       'description': description,
+      'imageUrl': imageUrl,
     };
 
     final response = await http.post(
-      Uri.parse('http://192.168.0.124:5000/api/users/postNews'),
+      Uri.parse('http://10.169.28.210:5000/api/users/postNews'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -73,6 +102,14 @@ class _AdminNews extends State<AdminNews> {
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(labelText: 'Description'),
+            ),
+            SizedBox(height: 16.0),
+            _imageFile == null
+                ? Text('No image selected.')
+                : Text("Image added"),
+            ElevatedButton(
+              onPressed: _pickImage,
+              child: Text('Pick Image'),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(

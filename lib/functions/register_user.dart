@@ -19,7 +19,7 @@ class RegisterUser {
 }
 
 Future<void> registerUser(RegisterUser user) async {
-  const String url = 'http://192.168.0.124:5000/api/users/register'; // Update with your server's address
+  const String url = 'http://10.169.28.210:5000/api/users/register'; // Update with your server's address
 
   try {
     final response = await http.post(
