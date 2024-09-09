@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 class UsersListScreen extends StatefulWidget {
   @override
   _UsersListScreenState createState() => _UsersListScreenState();
@@ -34,7 +33,7 @@ class _UsersListScreenState extends State<UsersListScreen> {
 
     String filter ='';
     final response = await http.get(
-      Uri.parse('http://10.169.28.210:5000/api/users/usersByFilter?email=$email&$filter'),
+      Uri.parse('http://10.169.29.139:5000/api/users/usersByFilter?email=$email&$filter'),
       headers: {
         'Content-Type': 'application/json',
       },

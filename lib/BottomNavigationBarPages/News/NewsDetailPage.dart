@@ -1,24 +1,50 @@
 import 'package:flutter/material.dart';
 
+class NewsDetailPage extends StatefulWidget {
 
-
-class NewsDetailPage extends StatelessWidget {
+  
   final String title;
   final String imageUrl;
   final String description;
+  final List<String> picturesUrl;
 
   const NewsDetailPage({
     Key? key,
     required this.title,
     required this.imageUrl,
     required this.description,
+    required this.picturesUrl,
   }) : super(key: key);
+
+  @override
+  _NewsDetailPageState createState() => _NewsDetailPageState();
+}
+
+class _NewsDetailPageState extends State<NewsDetailPage> {
+
+late List<Widget> _pages;
+
+
+@override
+void initState(){
+  super.initState();
+  _pages = List.generate(widget.picturesUrl.length,
+   (index) => Image.network(
+    widget.picturesUrl[index],
+    fit:BoxFit.cover,
+    errorBuilder: (context,error,stackTrace){
+      return const Center(child: Text('Image not Found'),);
+    },
+    ));
+
+  
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
         backgroundColor: const Color.fromARGB(255, 0, 94, 132),
       ),
       body: Padding(
@@ -29,7 +55,7 @@ class NewsDetailPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Image.network(
-                imageUrl,
+                widget.imageUrl,
                 width: double.infinity,
                 height: 200,
                 fit: BoxFit.cover,
@@ -40,7 +66,7 @@ class NewsDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              title,
+              widget.title,
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -48,11 +74,27 @@ class NewsDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              description,
+              widget.description,
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.grey,
               ),
+            ),
+            const SizedBox(height: 20,),
+            Stack(
+              children: [
+                SizedBox(
+                  
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 4,
+                  child: PageView.builder(
+                    itemCount: widget.picturesUrl.length,
+                    itemBuilder: (context, index) {
+                      return _pages[index]; // Replace with your widget content
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),

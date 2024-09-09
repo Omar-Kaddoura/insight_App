@@ -6,6 +6,7 @@ class RegisterUser {
   final String username;
   final String email;
   final String password;
+  
 
   RegisterUser({required this.username, required this.email, required this.password});
 
@@ -19,7 +20,7 @@ class RegisterUser {
 }
 
 Future<void> registerUser(RegisterUser user) async {
-  const String url = 'http://10.169.28.210:5000/api/users/register'; // Update with your server's address
+  const String url = 'http://10.169.29.139:5000/api/users/register'; // Update with your server's address
 
   try {
     final response = await http.post(

@@ -6,13 +6,15 @@ import 'package:insight/BottomNavigationBarPages/Profile.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:insight/messaging/user_list.dart';
 import 'package:insight/components/up_logo.dart';
-
+import 'package:insight/BottomNavigationBarPages/Social/Filter_Page.dart';
 class HomePageWithNavigation extends StatefulWidget {
   const HomePageWithNavigation({Key? key}) : super(key: key);
 
   @override
   _HomePageWithNavigationState createState() => _HomePageWithNavigationState();
 }
+
+
 
 class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
   final PageController _pageController = PageController();
@@ -22,6 +24,25 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+  Widget _buildNavItem(IconData icon, String label) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: Color(0xFFebf5f7),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: Color(0xFFebf5f7),
+            fontSize: 9,
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -37,38 +58,22 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
         },
         children: <Widget>[
           News(),
-          UsersListScreen(),
+          FilterPage(),
           Shop(),
           ProfilePage(), // Remove the logout function
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.blueGrey,
-        buttonBackgroundColor: Colors.grey,
+        backgroundColor: Colors.transparent,
+        buttonBackgroundColor: Color(0xFF005E84),
         color: const Color(0xFF005E84),
-        height: 65,
+        height: 60,
         index: _selectedIndex,
-        items: const <Widget>[
-          Icon(
-            Icons.article,
-            size: 35,
-            color: Colors.green,
-          ),
-          Icon(
-            Icons.people,
-            size: 35,
-            color: Colors.green,
-          ),
-          Icon(
-            Icons.shopping_cart,
-            size: 35,
-            color: Colors.green,
-          ),
-          Icon(
-            Icons.person,
-            size: 35,
-            color: Colors.green,
-          ),
+        items:  <Widget>[
+          _buildNavItem(Icons.article, 'News'),
+          _buildNavItem(Icons.people, 'Social'),
+          _buildNavItem(Icons.shopping_cart, 'Shop'),
+          _buildNavItem(Icons.person, 'Profile'),
         ],
         onTap: (index) {
           _pageController.animateToPage(

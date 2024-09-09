@@ -4,8 +4,6 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:permission_handler/permission_handler.dart';
-
 
 class AdminNews extends StatefulWidget {
   @override
@@ -16,28 +14,40 @@ class _AdminNews extends State<AdminNews> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  var _imageFile;
+  File? _singleImageFile;
+  final List<File> _multipleImageFiles = [];
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickImage() async {
+  Future<void> _pickSingleImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        _imageFile = File(pickedFile.path);
+        _singleImageFile = File(pickedFile.path);
       });
     }
   }
-  Future<String?> _uploadImage(String title) async {
-  if (_imageFile == null) return null;
 
-  try {
-    final storageRef = FirebaseStorage.instance.ref().child('$title/front/${_imageFile!.uri.pathSegments.last}').putFile(_imageFile);
-    
-  } catch (e) {
-    print('Error uploading image: $e');
-    return null;
+  Future<void> _pickMultipleImages() async {
+    final pickedFiles = await _picker.pickMultiImage();
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      setState(() {
+        _multipleImageFiles.addAll(pickedFiles.map((file) => File(file.path)));
+      });
+    }
   }
-}
+
+  Future<String?> _uploadImage(File imageFile, String title, String folderName) async {
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('$title/$folderName/${imageFile.uri.pathSegments.last}');
+      await storageRef.putFile(imageFile);
+      return await storageRef.getDownloadURL();
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
 
   Future<void> _submitNews() async {
     final String title = _titleController.text;
@@ -50,17 +60,30 @@ class _AdminNews extends State<AdminNews> {
       );
       return;
     }
-    final imageUrl = await _uploadImage(title);
+
+    String? singleImageUrl;
+    if (_singleImageFile != null) {
+      singleImageUrl = await _uploadImage(_singleImageFile!, title, 'front');
+    }
+
+    List<String> multipleImageUrls = [];
+    for (var imageFile in _multipleImageFiles) {
+      final imageUrl = await _uploadImage(imageFile, title, 'pictures');
+      if (imageUrl != null) {
+        multipleImageUrls.add(imageUrl);
+      }
+    }
 
     final newsData = {
       'title': title,
       'date': date,
       'description': description,
-      'imageUrl': imageUrl,
+      'imageUrl': singleImageUrl,
+      'additionalImages': multipleImageUrls,
     };
 
     final response = await http.post(
-      Uri.parse('http://10.169.28.210:5000/api/users/postNews'),
+      Uri.parse('http://10.169.29.139:5000/api/users/postNews'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -71,7 +94,6 @@ class _AdminNews extends State<AdminNews> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('News added successfully!')),
       );
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to add news')),
@@ -104,12 +126,20 @@ class _AdminNews extends State<AdminNews> {
               decoration: InputDecoration(labelText: 'Description'),
             ),
             SizedBox(height: 16.0),
-            _imageFile == null
-                ? Text('No image selected.')
-                : Text("Image added"),
+            _singleImageFile == null
+                ? Text('No single image selected.')
+                : Text("Single image added"),
             ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Pick Image'),
+              onPressed: _pickSingleImage,
+              child: Text('Pick Single Image'),
+            ),
+            SizedBox(height: 16.0),
+            _multipleImageFiles.isEmpty
+                ? Text('No multiple images selected.')
+                : Text("${_multipleImageFiles.length} images added"),
+            ElevatedButton(
+              onPressed: _pickMultipleImages,
+              child: Text('Pick Multiple Images'),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
