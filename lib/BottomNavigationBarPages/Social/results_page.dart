@@ -117,7 +117,7 @@ class _ResultsPageState extends State<ResultsPage> {
       crossAxisCount: 2,
       crossAxisSpacing: 6,
       mainAxisSpacing: 10,
-      childAspectRatio: 0.72,
+      childAspectRatio: 0.90,
     ),
     itemCount: _users.length,
     itemBuilder: (context, index) {
