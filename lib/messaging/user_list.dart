@@ -33,7 +33,7 @@ class _UsersListScreenState extends State<UsersListScreen> {
 
     String filter ='';
     final response = await http.get(
-      Uri.parse('http://10.169.29.139:5000/api/users/usersByFilter?email=$email&$filter'),
+      Uri.parse('http://10.169.31.71:5000/api/users/usersByFilter?email=$email&$filter'),
       headers: {
         'Content-Type': 'application/json',
       },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Admin_Social.dart';
+import 'Admin_Events.dart';
 import 'Admin_news.dart';
 import 'Admin_shop.dart';
 import 'Admin_Profile.dart';
@@ -34,7 +34,7 @@ class _AdminHome extends State<AdminHome> {
         },
         children: <Widget>[
           AdminNews(),
-          AdminSocial(),
+          AdminEvents(),
           AdminShop(),
           AdminProfile(), // Remove the logout function
         ],

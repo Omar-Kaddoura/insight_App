@@ -4,22 +4,24 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-
-class AdminNews extends StatefulWidget {
-  const AdminNews({super.key});
-
+class AdminEvents extends StatefulWidget{
+  const AdminEvents ({super.key});
+  
   @override
-  // ignore: library_private_types_in_public_api
-  _AdminNews createState() => _AdminNews();
+  _AdminEvents createState() => _AdminEvents();
 }
 
-class _AdminNews extends State<AdminNews> {
+class _AdminEvents extends State<AdminEvents> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  
+
   File? _singleImageFile;
-  final List<File> _multipleImageFiles = [];
   final ImagePicker _picker = ImagePicker();
+
 
   Future<void> _pickSingleImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -30,19 +32,11 @@ class _AdminNews extends State<AdminNews> {
     }
   }
 
-  Future<void> _pickMultipleImages() async {
-    final pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
-      setState(() {
-        _multipleImageFiles.addAll(pickedFiles.map((file) => File(file.path)));
-      });
-    }
-  }
-  Future<String?> _uploadImage(File imageFile, String title, String folderName) async {
+   Future<String?> _uploadImage(File imageFile, String title, String folderName) async {
     try {
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('news/$title/$folderName/${imageFile.uri.pathSegments.last}');
+          .child('events/$title/$folderName/${imageFile.uri.pathSegments.last}');
       await storageRef.putFile(imageFile);
       return await storageRef.getDownloadURL();
     } catch (e) {
@@ -50,9 +44,12 @@ class _AdminNews extends State<AdminNews> {
       return null;
     }
   }
-  Future<void> _submitNews() async {
+
+  Future<void> _submitEvents() async {
     final String title = _titleController.text;
     final String date = _dateController.text;
+    final String time = _timeController.text;
+    final String location = _locationController.text;
     final String description = _descriptionController.text;
 
     if (title.isEmpty || date.isEmpty || description.isEmpty) {
@@ -61,53 +58,58 @@ class _AdminNews extends State<AdminNews> {
       );
       return;
     }
+
     String? singleImageUrl;
     if (_singleImageFile != null) {
       singleImageUrl = await _uploadImage(_singleImageFile!, title, 'front');
     }
-    List<String> multipleImageUrls = [];
-    for (var imageFile in _multipleImageFiles) {
-      final imageUrl = await _uploadImage(imageFile, title, 'pictures');
-      if (imageUrl != null) {
-        multipleImageUrls.add(imageUrl);
-      }
-    }
-    final newsData = {
-      'title': title,
-      'date': date,
-      'description': description,
-      'imageUrl': singleImageUrl,
-      'additionalImages': multipleImageUrls,
-    };
+
+    print('OMAAAAAAAAAAAAAAAR');
+
+    final eventsData = {
+  'title': title,
+  'date': date,
+  'time': time,
+  'location': location, 
+  'description': description,
+};
+
+    
+    print(eventsData);
 
     final response = await http.post(
-      Uri.parse('http://10.169.31.71:5000/api/users/postNews'),
+      Uri.parse('http://10.169.31.71:5000/api/users/postEvents'),
       headers: {
         'Content-Type': 'application/json',
       },
-      body: json.encode(newsData),
+      body: json.encode(eventsData),
     );
 
     if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('News added successfully!')),
+        SnackBar(content: Text('Event added successfully!')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add news')),
+        SnackBar(content: Text('Event to add news')),
       );
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add News'),
-      ),
-      body: Padding(
+
+
+
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Add Events'),
+    ),
+    body: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _titleController,
@@ -117,6 +119,16 @@ class _AdminNews extends State<AdminNews> {
             TextField(
               controller: _dateController,
               decoration: InputDecoration(labelText: 'Date'),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _timeController,
+              decoration: InputDecoration(labelText: 'Time'),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _locationController,
+              decoration: InputDecoration(labelText: 'Location'),
             ),
             SizedBox(height: 16.0),
             TextField(
@@ -132,21 +144,15 @@ class _AdminNews extends State<AdminNews> {
               child: Text('Pick Single Image'),
             ),
             SizedBox(height: 16.0),
-            _multipleImageFiles.isEmpty
-                ? Text('No multiple images selected.')
-                : Text("${_multipleImageFiles.length} images added"),
             ElevatedButton(
-              onPressed: _pickMultipleImages,
-              child: Text('Pick Multiple Images'),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _submitNews,
-              child: Text('Add News'),
+              onPressed: _submitEvents,
+              child: Text('Add Event'),
             ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

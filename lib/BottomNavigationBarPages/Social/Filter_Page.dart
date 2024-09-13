@@ -69,7 +69,7 @@ class _FilterPageState extends State<FilterPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://10.169.29.139:5000/api/users/usersByFilter?email=$email&cabinet=yes'),
+        Uri.parse('http://10.169.31.71:5000/api/users/usersByFilter?email=$email&cabinet=yes'),
         headers: {'Content-Type': 'application/json'},
       );
 

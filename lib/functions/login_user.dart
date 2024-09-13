@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String apiUrl = 'http://10.169.29.139:5000/api/users';
+  final String apiUrl = 'http://10.169.31.71:5000/api/users';
 
   Future<Map<String, String?>?> login(String email, String password) async {
     final response = await http.post(
@@ -18,7 +18,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
+      
       // print("tokens????");
       return {
         'token': data['token'],
@@ -26,7 +26,7 @@ class AuthService {
         'type': data['type'],
       };
     } else {
-      print("didnt get tokens");
+      
       return null;
     }
   }

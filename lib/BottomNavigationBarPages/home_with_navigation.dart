@@ -7,6 +7,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:insight/messaging/user_list.dart';
 import 'package:insight/components/up_logo.dart';
 import 'package:insight/BottomNavigationBarPages/Social/Filter_Page.dart';
+import 'package:insight/messaging/user_list.dart';
 class HomePageWithNavigation extends StatefulWidget {
   const HomePageWithNavigation({Key? key}) : super(key: key);
 
@@ -58,19 +59,21 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
         },
         children: <Widget>[
           News(),
+          UsersListScreen(),
           FilterPage(),
           Shop(),
-          ProfilePage(), // Remove the logout function
+          ProfilePage(),
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.transparent,
         buttonBackgroundColor: Color(0xFF005E84),
         color: const Color(0xFF005E84),
-        height: 60,
+        height: 75,
         index: _selectedIndex,
         items:  <Widget>[
           _buildNavItem(Icons.article, 'News'),
+          _buildNavItem(Icons.article, 'Events'),
           _buildNavItem(Icons.people, 'Social'),
           _buildNavItem(Icons.shopping_cart, 'Shop'),
           _buildNavItem(Icons.person, 'Profile'),

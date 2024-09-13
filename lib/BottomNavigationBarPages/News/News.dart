@@ -23,10 +23,10 @@ class _NewsState extends State<News> {
       final ListResult result = await front.listAll();
       final ref = result.items.first;
       final url = await ref.getDownloadURL();
-      print("front URL $url ");
+     
       return url;
     } catch (e) {
-      print('Error listing items in $folderName: $e');
+      
       return '';
       }
   }
@@ -39,15 +39,15 @@ class _NewsState extends State<News> {
         String url = await ref.getDownloadURL();
         urls.add(url);
       }
-      print("Pictures URLs for $folderName: $urls");
+      
       return urls;
     } catch (e) {
-      print('Error listing pictures in $folderName: $e');
+      
       return [];
     }
   }
   Future<void> fetchNews() async {
-    final response = await http.get(Uri.parse('http://10.169.29.139:5000/api/users/getAllNews'));
+    final response = await http.get(Uri.parse('http://10.169.31.71:5000/api/users/getAllNews'));
    
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

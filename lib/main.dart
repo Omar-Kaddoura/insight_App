@@ -7,10 +7,12 @@ import 'Admin/AdminBottomNavigationBarPages/Admin_home.dart';
 import 'BottomNavigationBarPages/home_with_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
+import 'api/firebase_api.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("hereee");
+  await FireabaseApi().initNotifications;
 
   // Initialize secure storage
   final _storage = FlutterSecureStorage();
@@ -24,15 +26,11 @@ void main() async {
   if (token != null && type != null) {
     initialRoute = type == 'Admin' ? '/admin_home' : '/student_home';
   }
-
   runApp(MyApp(initialRoute: initialRoute));
 }
-
 class MyApp extends StatelessWidget {
   final String initialRoute;
-
   MyApp({required this.initialRoute});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
