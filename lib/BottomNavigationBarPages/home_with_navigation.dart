@@ -8,6 +8,7 @@ import 'package:insight/messaging/user_list.dart';
 import 'package:insight/components/up_logo.dart';
 import 'package:insight/BottomNavigationBarPages/Social/Filter_Page.dart';
 import 'package:insight/messaging/user_list.dart';
+import 'package:insight/BottomNavigationBarPages/Events/Events.dart';
 class HomePageWithNavigation extends StatefulWidget {
   const HomePageWithNavigation({Key? key}) : super(key: key);
 
@@ -59,7 +60,7 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
         },
         children: <Widget>[
           News(),
-          UsersListScreen(),
+          Events(),
           FilterPage(),
           Shop(),
           ProfilePage(),

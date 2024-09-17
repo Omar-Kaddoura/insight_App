@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 class AdminEvents extends StatefulWidget{
   const AdminEvents ({super.key});
-  
+
   @override
   _AdminEvents createState() => _AdminEvents();
 }
@@ -17,12 +17,12 @@ class _AdminEvents extends State<AdminEvents> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  
+
 
   File? _singleImageFile;
   final ImagePicker _picker = ImagePicker();
 
-
+  
   Future<void> _pickSingleImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -31,7 +31,7 @@ class _AdminEvents extends State<AdminEvents> {
       });
     }
   }
-
+  
    Future<String?> _uploadImage(File imageFile, String title, String folderName) async {
     try {
       final storageRef = FirebaseStorage.instance
