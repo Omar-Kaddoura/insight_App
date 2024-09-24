@@ -78,7 +78,7 @@ class _AdminEvents extends State<AdminEvents> {
     print(eventsData);
 
     final response = await http.post(
-      Uri.parse('http://10.169.31.71:5000/api/users/postEvents'),
+      Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/postEvents'),
       headers: {
         'Content-Type': 'application/json',
       },

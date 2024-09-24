@@ -47,7 +47,7 @@ class _NewsState extends State<News> {
     }
   }
   Future<void> fetchNews() async {
-    final response = await http.get(Uri.parse('http://10.169.31.71:5000/api/users/getAllNews'));
+    final response = await http.get(Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/getAllNews'));
    
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);

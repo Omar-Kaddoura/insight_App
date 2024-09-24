@@ -19,6 +19,7 @@ class _EventsState extends State<Events> {
   }
   Future<String> getImageUrl(String folderName) async {
      try {
+      print("hereer");
       final front = storage.ref().child('events/$folderName/front'); 
       final ListResult result = await front.listAll();
       final ref = result.items.first;
@@ -47,11 +48,13 @@ class _EventsState extends State<Events> {
   //   }
   // }
   Future<void> fetchNews() async {
-    final response = await http.get(Uri.parse('http://10.169.31.71:5000/api/users/getAllEvents'));
+    
+
+    final response = await http.get(Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/getAllEvents'));
    
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
-
+      
       for (var item in data) {
         
         
@@ -73,6 +76,7 @@ class _EventsState extends State<Events> {
         
       }
     } else {
+       print('Error: ${response.body}');
       throw Exception('Failed to load news');
     }
   }

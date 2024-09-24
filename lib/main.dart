@@ -8,12 +8,14 @@ import 'BottomNavigationBarPages/home_with_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'api/firebase_api.dart';
+import 'package:insight/BottomNavigationBarPages/Social/messaging/fcm_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   print("hereee");
-  await FireabaseApi().initNotifications;
-
+  FcmService().initializeFCM();
+  
   // Initialize secure storage
   final _storage = FlutterSecureStorage();
 

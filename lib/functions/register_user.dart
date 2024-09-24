@@ -20,7 +20,7 @@ class RegisterUser {
 }
 
 Future<void> registerUser(RegisterUser user) async {
-  const String url = 'http://10.169.31.71:5000/api/users/register'; // Update with your server's address
+  const String url = 'https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/register'; // Update with your server's address
 
   try {
     final response = await http.post(

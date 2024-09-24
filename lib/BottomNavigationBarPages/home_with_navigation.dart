@@ -4,10 +4,10 @@ import 'package:insight/BottomNavigationBarPages/Social.dart';
 import 'package:insight/BottomNavigationBarPages/Shop.dart';
 import 'package:insight/BottomNavigationBarPages/Profile.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:insight/messaging/user_list.dart';
+
 import 'package:insight/components/up_logo.dart';
 import 'package:insight/BottomNavigationBarPages/Social/Filter_Page.dart';
-import 'package:insight/messaging/user_list.dart';
+
 import 'package:insight/BottomNavigationBarPages/Events/Events.dart';
 class HomePageWithNavigation extends StatefulWidget {
   const HomePageWithNavigation({Key? key}) : super(key: key);

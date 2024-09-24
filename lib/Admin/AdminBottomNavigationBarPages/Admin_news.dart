@@ -81,7 +81,7 @@ class _AdminNews extends State<AdminNews> {
     };
 
     final response = await http.post(
-      Uri.parse('http://10.169.31.71:5000/api/users/postNews'),
+      Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/postNews'),
       headers: {
         'Content-Type': 'application/json',
       },

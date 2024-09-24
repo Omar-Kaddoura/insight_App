@@ -5,6 +5,7 @@ import 'results_page.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:insight/messaging/chat_screen.dart';
 
 class FilterPage extends StatefulWidget {
   @override
@@ -13,36 +14,76 @@ class FilterPage extends StatefulWidget {
 
 class _FilterPageState extends State<FilterPage> {
   final storage = FirebaseStorage.instance;
-  final _storage = FlutterSecureStorage();
-
+  final _storage = const FlutterSecureStorage();
   String? selectedFaculty;
   String? selectedMajor;
   String? companySearchQuery;
   bool showCompanySearchField = false;
   Set<String> selectedFilters = {};
   Set<String> pressedFilters = {};
-
   List<String> majors = [
-    'Agri-Business', 'Agri-culture', 'Applied Mathematics', 'Arabic', 'Archaeology',
-    'Architecture', 'Art History', 'Biology', 'Business Administration', 'Chemical Engineering',
-    'Chemistry', 'Civil and Environmental Engineering', 'Computer and Communications Engineering',
-    'Computer Science', 'Construction Engineering', 'Earth Sciences', 'Electrical and Computer Engineering',
-    'Elementary Education', 'English Language', 'English Literature', 'Environmental Health',
-    'Food Sciences and Management', 'Graphic Design', 'Health Communication', 'History',
-    'Industrial Engineering', 'Landscape Architecture (BLA)', 'Mathematics', 'Mechanical Engineering',
-    'Media and Communication', 'Medical Imaging Sciences', 'Medical Laboratory Sciences', 'Nursing',
-    'Nutrition and Dietetics', 'Philosophy', 'Physics', 'Political Studies', 'Psychology',
-    'Public Administration', 'Sociology-Anthropology', 'Statistics', 'Studio Arts'
+    'Agri-Business',
+    'Agri-culture',
+    'Applied Mathematics',
+    'Arabic',
+    'Archaeology',
+    'Architecture',
+    'Art History',
+    'Biology',
+    'Business Administration',
+    'Chemical Engineering',
+    'Chemistry',
+    'Civil and Environmental Engineering',
+    'Computer and Communications Engineering',
+    'Computer Science',
+    'Construction Engineering',
+    'Earth Sciences',
+    'Electrical and Computer Engineering',
+    'Elementary Education',
+    'English Language',
+    'English Literature',
+    'Environmental Health',
+    'Food Sciences and Management',
+    'Graphic Design',
+    'Health Communication',
+    'History',
+    'Industrial Engineering',
+    'Landscape Architecture (BLA)',
+    'Mathematics',
+    'Mechanical Engineering',
+    'Media and Communication',
+    'Medical Imaging Sciences',
+    'Medical Laboratory Sciences',
+    'Nursing',
+    'Nutrition and Dietetics',
+    'Philosophy',
+    'Physics',
+    'Political Studies',
+    'Psychology',
+    'Public Administration',
+    'Sociology-Anthropology',
+    'Statistics',
+    'Studio Arts'
   ];
 
   List<dynamic> _profiles = [];
   bool _isLoading = true;
+  String? sEmail = '';
   String _errorMessage = '';
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
+    _currentEmail();
     _fetchUsers();
+  }
+
+  Future<void> _currentEmail() async {
+    String? E = await _storage.read(key: 'email');
+    setState(() {
+      sEmail = E;
+    });
   }
 
   Future<String> getImageUrl(String userEmail) async {
@@ -53,56 +94,97 @@ class _FilterPageState extends State<FilterPage> {
       return url;
     } catch (e) {
       print('Error fetching profile image for $userEmail: $e');
-      return ''; // Return an empty string if an error occurs
+      return '';
     }
   }
 
   Future<void> _fetchUsers() async {
+    // Get the stored email
+    // const email = 'oyk01@mail.aub.edu';
+
     final email = await _storage.read(key: 'email');
+
+    // Check if the email is null
     if (email == null) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'User email is not available';
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'User email is not available';
+        });
+      }
       return;
     }
 
     try {
+      // Make the GET request
       final response = await http.get(
-        Uri.parse('http://10.169.31.71:5000/api/users/usersByFilter?email=$email&cabinet=yes'),
+        Uri.parse(
+          'https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/usersByFilter?email=$email&cabinet=yes',
+        ),
         headers: {'Content-Type': 'application/json'},
       );
 
+      // Check if the widget is still mounted after the HTTP request
+      if (!mounted) return;
+      print(sEmail);
+      print(email);
+      // Log the response status and body
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      // Check if the request was successful
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
         if (data is List) {
-          setState(() {
-            _profiles = data;
-            _isLoading = false;
-          });
+          if (mounted) {
+            setState(() {
+              _profiles = data;
+              _isLoading = false;
+            });
+          }
+        } else if (data is Map && data['users'] is List) {
+          if (mounted) {
+            setState(() {
+              _profiles = data['users'];
+              _isLoading = false;
+            });
+          }
         } else {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = 'Unexpected data format';
-          });
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _errorMessage = 'Unexpected data format. Expected a List.';
+            });
+          }
         }
       } else {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = 'Failed to load users';
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+            _errorMessage =
+                'Failed to load users: Status code ${response.statusCode}';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = 'Error fetching users: $e';
-      });
+      // Handle any other errors during the HTTP request
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Error fetching users: $e';
+        });
+      }
     }
   }
 
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
 
-
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -142,21 +224,33 @@ class _FilterPageState extends State<FilterPage> {
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
-                    onChanged: (text) {
-                    
-                    },
+                    onChanged: (text) {},
                   ),
                   SizedBox(height: 20),
                   DropdownButton<String>(
                     value: null,
                     isExpanded: true,
                     items: const [
-                      DropdownMenuItem(value: "Search by Faculty", child: Text("Search by Faculty")),
-                      DropdownMenuItem(value: "Search by Major", child: Text("Search by Major")),
-                      DropdownMenuItem(value: "Search by Undergrad", child: Text("Search by Undergrad")),
-                      DropdownMenuItem(value: "Search by Grad", child: Text("Search by Grad")),
-                      DropdownMenuItem(value: "Search by PHD", child: Text("Search by PHD")),
-                      DropdownMenuItem(value: "Search by Company", child: Text("Search by Company")),
+                      DropdownMenuItem(
+                          value: "Search by Faculty",
+                          child: Text("Search by Faculty")),
+                      DropdownMenuItem(
+                          value: "Search by Major",
+                          child: Text("Search by Major")),
+                      DropdownMenuItem(
+                          value: "Search by Alumni",
+                          child: Text("Search by Alumni")),
+                      DropdownMenuItem(
+                          value: "Search by Undergrad",
+                          child: Text("Search by Undergrad")),
+                      DropdownMenuItem(
+                          value: "Search by Grad",
+                          child: Text("Search by Grad")),
+                      DropdownMenuItem(
+                          value: "Search by PHD", child: Text("Search by PHD")),
+                      DropdownMenuItem(
+                          value: "Search by Company",
+                          child: Text("Search by Company")),
                     ],
                     onChanged: (value) {
                       setState(() {
@@ -165,6 +259,9 @@ class _FilterPageState extends State<FilterPage> {
                             _showFacultyOptions();
                           } else if (value.contains("Major")) {
                             _showMajorOptions();
+                          } else if (value.contains("Alumni")) {
+                            selectedFilters.add("Alumni");
+                            pressedFilters.add('type=Alumni');
                           } else if (value.contains("Company")) {
                             showCompanySearchField = true;
                           } else if (value.contains("Undergrad")) {
@@ -172,7 +269,7 @@ class _FilterPageState extends State<FilterPage> {
                             pressedFilters.add('studies=Undergraduate');
                           } else if (value.contains("Grad")) {
                             selectedFilters.add("Grad");
-                            pressedFilters.add('stduies=Graduate');
+                            pressedFilters.add('studies=Graduate');
                           } else if (value.contains("PHD")) {
                             selectedFilters.add("PHD");
                             pressedFilters.add('studies=PHD');
@@ -180,7 +277,6 @@ class _FilterPageState extends State<FilterPage> {
                         }
                       });
                     },
-                    hint: Text("Filter Settings"),
                     underline: Container(),
                   ),
                   SizedBox(height: 20),
@@ -196,10 +292,8 @@ class _FilterPageState extends State<FilterPage> {
                       onChanged: (text) {
                         setState(() {
                           companySearchQuery = text;
-                          
                         });
                       },
-
                       onSubmitted: (text) {
                         selectedFilters.add(text);
                         pressedFilters.add('company=$text');
@@ -218,9 +312,9 @@ class _FilterPageState extends State<FilterPage> {
                         label: Text(filter),
                         onDeleted: () {
                           setState(() {
-                            pressedFilters.removeWhere((item) => item.contains('=$filter'));
+                            pressedFilters.removeWhere(
+                                (item) => item.contains('=$filter'));
                             selectedFilters.remove(filter);
-                            
                           });
                         },
                       );
@@ -229,13 +323,16 @@ class _FilterPageState extends State<FilterPage> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
+                      print(
+                          "HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER");
                       print(pressedFilters);
                       print(selectedFilters);
                       String combinedFilters = pressedFilters.join('&');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ResultsPage(combinedFilters: combinedFilters,),
+                          builder: (context) =>
+                              ResultsPage(combinedFilters: combinedFilters),
                         ),
                       );
                     },
@@ -255,16 +352,21 @@ class _FilterPageState extends State<FilterPage> {
       context: context,
       builder: (context) {
         return ListView(
-          padding: EdgeInsets.all(16),
           children: [
-            _buildFacultyOption('FAFS'),
-            _buildFacultyOption('FAS'),
-            _buildFacultyOption('FHS'),
-            _buildFacultyOption('FM'),
-            _buildFacultyOption('HSON'),
-            _buildFacultyOption('MSFEA'),
-            _buildFacultyOption('OSB'),
-          ],
+            'Faculty of Arts',
+            'Faculty of Science',
+            'Faculty of Engineering'
+          ].map((faculty) {
+            return ListTile(
+              title: Text(faculty),
+              onTap: () {
+                selectedFilters.add(faculty);
+                pressedFilters.add('faculty=$faculty');
+                setState(() {});
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
         );
       },
     );
@@ -275,16 +377,13 @@ class _FilterPageState extends State<FilterPage> {
       context: context,
       builder: (context) {
         return ListView(
-          padding: EdgeInsets.all(16),
           children: majors.map((major) {
             return ListTile(
               title: Text(major),
               onTap: () {
-                setState(() {
-                  selectedMajor = major;
-                  pressedFilters.add('major=$major');
-                  selectedFilters.add(major);
-                });
+                selectedFilters.add(major);
+                pressedFilters.add('major=$major');
+                setState(() {});
                 Navigator.pop(context);
               },
             );
@@ -294,96 +393,65 @@ class _FilterPageState extends State<FilterPage> {
     );
   }
 
-  Widget _buildFacultyOption(String faculty) {
-    return ListTile(
-      title: Text(faculty),
+  Widget _buildUserCard(
+      Map<String, dynamic> user, AsyncSnapshot<String> snapshot) {
+    final email = user['email'] ?? 'No email';
+    final imageUrl = snapshot.data ?? '';
+
+    return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedFaculty = faculty;
-          selectedFilters.add(faculty);
-          pressedFilters.add('faculty=$faculty');
-        });
-        Navigator.pop(context);
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => PublicProfilePage(email: email),
+        //   ),
+        // );
       },
+      child: Card(
+        elevation: 4.0,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+        child: Container(
+          width: 160,
+          child: Column(
+            children: [
+              imageUrl.isNotEmpty
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(15.0),
+                      child: Image.network(
+                        imageUrl,
+                        height: 60,
+                        width: 80,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Icon(
+                      Icons.account_circle,
+                      size: 120,
+                    ),
+              SizedBox(height: 8),
+              Text(user['username'] ?? 'No username'),
+              SizedBox(height: 4),
+              Text(email),
+              SizedBox(height: 4),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                        senderEmail: sEmail,
+                        receiverEmail: email,
+                      ),
+                    ),
+                  );
+                },
+                child: Text('Message'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-
-  // Widget _buildProfileCard(String imagePath, String name, String major, String company, {bool showMessageButton = false}) {
-  //   return InkWell(
-  //     onTap: () {
-  //       // Navigate to another page when the card is tapped
-  //       Navigator.push(
-  //         context,          //TODO: open the page for the specific user, the following public profile page is only for one user
-  //         MaterialPageRoute(builder: (context) => PublicProfilePage()),
-  //       );
-  //     },
-  //     child: Card(
-  //       child: Column(
-  //         children: [
-  //           Image.asset(imagePath, height: 200, width: 200),
-  //           Text(name),
-  //           Text(major),
-  //           Text(company),
-  //           if (showMessageButton)
-  //             ElevatedButton(
-  //               onPressed: () {
-  //                 // Handle message button press
-  //               },
-  //               child: Text('Message'),
-  //             ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-  Widget _buildUserCard(Map<String, dynamic> user, AsyncSnapshot<String> snapshot) {
-  final imageUrl = snapshot.data ?? ''; // Default to empty string if image URL is not yet available
-
-  return Card(
-    margin: EdgeInsets.symmetric(horizontal: 8.0),
-    elevation: 7.0,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(40.0),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 55.0,
-            backgroundImage: NetworkImage(imageUrl),
-            backgroundColor: Colors.grey[200],
-          ),
-
-          SizedBox(height: 2.0),
-          Text(
-            user['username'] ?? 'Unknown User',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 4.0),
-          Text(
-            user['email'] ?? 'No email',
-            style: TextStyle(
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-          ),
-          // SizedBox(height: 1.0),
-          ElevatedButton(
-            onPressed: (){
-
-            },
-             child: Text('Message'),
-             ),
-        ],
-      ),
-    ),
-  );
-}
-
 }

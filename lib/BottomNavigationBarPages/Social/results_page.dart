@@ -11,16 +11,13 @@ class ResultsPage extends StatefulWidget {
   _ResultsPageState createState() => _ResultsPageState();
 }
 class _ResultsPageState extends State<ResultsPage> {
-  
   TextEditingController _searchController = TextEditingController();
   late List<Map<String, String>> filteredProfiles;
    final _storage = FlutterSecureStorage();
    final storage = FirebaseStorage.instance;
-  
   List<dynamic> _users = [];
   bool _isLoading = true;
   String _errorMessage = '';
-  
   @override
   void initState() {
     super.initState();
@@ -37,14 +34,15 @@ class _ResultsPageState extends State<ResultsPage> {
     return;
   }
 
-  String filter ='';
+  String filter =widget.combinedFilters;
+  print("FILEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEer");
+  print(filter);
   final response = await http.get(
-    Uri.parse('http://10.169.31.71:5000/api/users/usersByFilter?email=$email&$filter'),
+    Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/usersByFilter?email=$email&$filter'),
     headers: {
       'Content-Type': 'application/json',
     },
   );
-
   if (response.statusCode == 200) {
     try {
       final data = jsonDecode(response.body);
@@ -88,9 +86,6 @@ class _ResultsPageState extends State<ResultsPage> {
     });
   }
 }
-
-
-
  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
