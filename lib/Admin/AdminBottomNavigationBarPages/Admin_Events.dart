@@ -10,19 +10,17 @@ class AdminEvents extends StatefulWidget{
   @override
   _AdminEvents createState() => _AdminEvents();
 }
-
 class _AdminEvents extends State<AdminEvents> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-
-
+  final TextEditingController _pollTitleController = TextEditingController();
+  final TextEditingController _pollDescriptionController = TextEditingController();
+  bool _hasPoll = false;
   File? _singleImageFile;
   final ImagePicker _picker = ImagePicker();
-
-  
   Future<void> _pickSingleImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -31,7 +29,6 @@ class _AdminEvents extends State<AdminEvents> {
       });
     }
   }
-  
    Future<String?> _uploadImage(File imageFile, String title, String folderName) async {
     try {
       final storageRef = FirebaseStorage.instance
@@ -72,6 +69,9 @@ class _AdminEvents extends State<AdminEvents> {
   'time': time,
   'location': location, 
   'description': description,
+  'hasPoll': _hasPoll,
+  'pollTitle': _hasPoll ? _pollTitleController.text : null,
+  'pollDescription': _hasPoll ? _pollDescriptionController.text : null,
 };
 
     
@@ -95,10 +95,6 @@ class _AdminEvents extends State<AdminEvents> {
       );
     }
   }
-
-
-
-
  @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -142,8 +138,30 @@ Widget build(BuildContext context) {
             ElevatedButton(
               onPressed: _pickSingleImage,
               child: Text('Pick Single Image'),
+
             ),
             SizedBox(height: 16.0),
+              SwitchListTile(
+                title: Text('Has Poll'),
+                value: _hasPoll,
+                onChanged: (bool value) {
+                  setState(() {
+                    _hasPoll = value;
+                  });
+                },
+              ),
+              if (_hasPoll) ...[
+                TextField(
+                  controller: _pollTitleController,
+                  decoration: InputDecoration(labelText: 'Poll Title'),
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: _pollDescriptionController,
+                  decoration: InputDecoration(labelText: 'What are you voting for?'),
+                ),
+              ],
+              SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _submitEvents,
               child: Text('Add Event'),

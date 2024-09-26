@@ -22,50 +22,17 @@ class _FilterPageState extends State<FilterPage> {
   Set<String> selectedFilters = {};
   Set<String> pressedFilters = {};
   List<String> majors = [
-    'Agri-Business',
-    'Agri-culture',
-    'Applied Mathematics',
-    'Arabic',
-    'Archaeology',
-    'Architecture',
-    'Art History',
-    'Biology',
-    'Business Administration',
-    'Chemical Engineering',
-    'Chemistry',
-    'Civil and Environmental Engineering',
-    'Computer and Communications Engineering',
-    'Computer Science',
-    'Construction Engineering',
-    'Earth Sciences',
-    'Electrical and Computer Engineering',
-    'Elementary Education',
-    'English Language',
-    'English Literature',
-    'Environmental Health',
-    'Food Sciences and Management',
-    'Graphic Design',
-    'Health Communication',
-    'History',
-    'Industrial Engineering',
-    'Landscape Architecture (BLA)',
-    'Mathematics',
-    'Mechanical Engineering',
-    'Media and Communication',
-    'Medical Imaging Sciences',
-    'Medical Laboratory Sciences',
-    'Nursing',
-    'Nutrition and Dietetics',
-    'Philosophy',
-    'Physics',
-    'Political Studies',
-    'Psychology',
-    'Public Administration',
-    'Sociology-Anthropology',
-    'Statistics',
-    'Studio Arts'
+    'Agri-Business', 'Agri-culture', 'Applied Mathematics', 'Arabic', 'Archaeology', 
+    'Architecture', 'Art History', 'Biology', 'Business Administration', 'Chemical Engineering', 
+    'Chemistry', 'Civil and Environmental Engineering', 'Computer and Communications Engineering', 
+    'Computer Science', 'Construction Engineering', 'Earth Sciences', 'Electrical and Computer Engineering', 
+    'Elementary Education', 'English Language', 'English Literature', 'Environmental Health', 
+    'Food Sciences and Management', 'Graphic Design', 'Health Communication', 'History', 
+    'Industrial Engineering', 'Landscape Architecture (BLA)', 'Mathematics', 'Mechanical Engineering', 
+    'Media and Communication', 'Medical Imaging Sciences', 'Medical Laboratory Sciences', 
+    'Nursing', 'Nutrition and Dietetics', 'Philosophy', 'Physics', 'Political Studies', 
+    'Psychology', 'Public Administration', 'Sociology-Anthropology', 'Statistics', 'Studio Arts'
   ];
-
   List<dynamic> _profiles = [];
   bool _isLoading = true;
   String? sEmail = '';
@@ -99,12 +66,7 @@ class _FilterPageState extends State<FilterPage> {
   }
 
   Future<void> _fetchUsers() async {
-    // Get the stored email
-    // const email = 'oyk01@mail.aub.edu';
-
     final email = await _storage.read(key: 'email');
-
-    // Check if the email is null
     if (email == null) {
       if (mounted) {
         setState(() {
@@ -116,7 +78,6 @@ class _FilterPageState extends State<FilterPage> {
     }
 
     try {
-      // Make the GET request
       final response = await http.get(
         Uri.parse(
           'https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/usersByFilter?email=$email&cabinet=yes',
@@ -124,15 +85,11 @@ class _FilterPageState extends State<FilterPage> {
         headers: {'Content-Type': 'application/json'},
       );
 
-      // Check if the widget is still mounted after the HTTP request
       if (!mounted) return;
+
       print(sEmail);
       print(email);
-      // Log the response status and body
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
 
-      // Check if the request was successful
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
@@ -168,7 +125,6 @@ class _FilterPageState extends State<FilterPage> {
         }
       }
     } catch (e) {
-      // Handle any other errors during the HTTP request
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -183,15 +139,19 @@ class _FilterPageState extends State<FilterPage> {
     _isDisposed = true;
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        padding: EdgeInsets.only(top: screenHeight * 0.04),
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.28,
+              height: screenHeight * 0.33,
               child: _isLoading
                   ? Center(child: CircularProgressIndicator())
                   : _profiles.isEmpty
@@ -204,15 +164,16 @@ class _FilterPageState extends State<FilterPage> {
                             return FutureBuilder<String>(
                               future: getImageUrl(user['email']),
                               builder: (context, snapshot) {
-                                return _buildUserCard(user, snapshot);
+                                return _buildUserCard(
+                                    user, snapshot, screenWidth, screenHeight);
                               },
                             );
                           },
                         ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: screenHeight * 0.02),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(screenWidth * 0.04),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -221,12 +182,12 @@ class _FilterPageState extends State<FilterPage> {
                       hintText: 'Search by Name',
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+                        borderRadius: BorderRadius.circular(screenWidth * 0.06),
                       ),
                     ),
                     onChanged: (text) {},
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
                   DropdownButton<String>(
                     value: null,
                     isExpanded: true,
@@ -279,14 +240,14 @@ class _FilterPageState extends State<FilterPage> {
                     },
                     underline: Container(),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
                   if (showCompanySearchField)
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Enter company name',
                         prefixIcon: Icon(Icons.search),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(screenWidth * 0.06),
                         ),
                       ),
                       onChanged: (text) {
@@ -303,10 +264,10 @@ class _FilterPageState extends State<FilterPage> {
                         });
                       },
                     ),
-                  SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
                   Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
+                    spacing: screenWidth * 0.02,
+                    runSpacing: screenHeight * 0.01,
                     children: selectedFilters.map((filter) {
                       return Chip(
                         label: Text(filter),
@@ -320,11 +281,11 @@ class _FilterPageState extends State<FilterPage> {
                       );
                     }).toList(),
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
                   ElevatedButton(
+                
                     onPressed: () {
-                      print(
-                          "HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER");
+                      
                       print(pressedFilters);
                       print(selectedFilters);
                       String combinedFilters = pressedFilters.join('&');
@@ -336,8 +297,11 @@ class _FilterPageState extends State<FilterPage> {
                         ),
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                    ),
                     child: Text('Search'),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -346,95 +310,34 @@ class _FilterPageState extends State<FilterPage> {
       ),
     );
   }
-
-  void _showFacultyOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ListView(
-          children: [
-            'Faculty of Arts',
-            'Faculty of Science',
-            'Faculty of Engineering'
-          ].map((faculty) {
-            return ListTile(
-              title: Text(faculty),
-              onTap: () {
-                selectedFilters.add(faculty);
-                pressedFilters.add('faculty=$faculty');
-                setState(() {});
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-
-  void _showMajorOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ListView(
-          children: majors.map((major) {
-            return ListTile(
-              title: Text(major),
-              onTap: () {
-                selectedFilters.add(major);
-                pressedFilters.add('major=$major');
-                setState(() {});
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        );
-      },
-    );
-  }
-
-  Widget _buildUserCard(
-      Map<String, dynamic> user, AsyncSnapshot<String> snapshot) {
+  Widget _buildUserCard(user, snapshot, double screenWidth, double screenHeight) {
+    final String imageUrl = snapshot.data ?? '';
     final email = user['email'] ?? 'No email';
-    final imageUrl = snapshot.data ?? '';
-
-    return GestureDetector(
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => PublicProfilePage(email: email),
-        //   ),
-        // );
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
       child: Card(
-        elevation: 4.0,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-        child: Container(
-          width: 160,
-          child: Column(
-            children: [
-              imageUrl.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(15.0),
-                      child: Image.network(
-                        imageUrl,
-                        height: 60,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : Icon(
-                      Icons.account_circle,
-                      size: 120,
-                    ),
-              SizedBox(height: 8),
-              Text(user['username'] ?? 'No username'),
-              SizedBox(height: 4),
-              Text(email),
-              SizedBox(height: 4),
-              ElevatedButton(
+        color: Colors.white,
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: screenWidth * 0.1,
+              backgroundImage: imageUrl.isNotEmpty
+                  ? NetworkImage(imageUrl)
+                  : AssetImage('assets/images/default_profile.png')
+                      as ImageProvider,
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Text(
+              user['username'] ?? '',
+              style: TextStyle(fontSize: screenWidth * 0.04),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Text(
+              user['email'] ?? '',
+              style: TextStyle(fontSize: screenWidth * 0.03),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            ElevatedButton(
                 onPressed: () async {
                   Navigator.push(
                     context,
@@ -448,10 +351,65 @@ class _FilterPageState extends State<FilterPage> {
                 },
                 child: Text('Message'),
               ),
-            ],
-          ),
+          ],
         ),
       ),
+    );
+  }
+  void _showFacultyOptions() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select a Faculty'),
+          content: DropdownButton<String>(
+            value: selectedFaculty,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedFaculty = newValue;
+                selectedFilters.add(newValue!);
+                pressedFilters.add('faculty=$newValue');
+              });
+              Navigator.of(context).pop();
+            },
+            items: <String>['Faculty of Arts', 'Faculty of Science']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+  void _showMajorOptions() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select a Major'),
+          content: DropdownButton<String>(
+            value: selectedMajor,
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedMajor = newValue;
+                selectedFilters.add(newValue!);
+                pressedFilters.add('major=$newValue');
+              });
+              Navigator.of(context).pop();
+            },
+            items: majors
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }

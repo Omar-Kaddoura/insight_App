@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../functions/login_user.dart';
+import 'package:insight/loading.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -31,7 +32,16 @@ class _LoginScreenState extends State<LoginScreen> {
         if (type  == 'Admin') {
           Navigator.pushReplacementNamed(context, '/admin_home');
         } else {
-          Navigator.pushReplacementNamed(context, '/student_home');
+          Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoadingScreen(
+            token: token, 
+            userType: type, 
+            email: email,
+          ),
+        ),
+      );
         }
 
         print('Login successful, token stored.');

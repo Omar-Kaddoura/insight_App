@@ -88,6 +88,7 @@ Widget build(BuildContext context) {
       double screenWidth = constraints.maxWidth;
       double screenHeight = constraints.maxHeight;
       return Scaffold(
+        backgroundColor: Colors.white,
         body: ListView.builder(
           itemCount: newsItems.length + 1,
           itemBuilder: (context, index) {
@@ -123,7 +124,8 @@ Widget build(BuildContext context) {
                 // );
               },
               child: Card(
-
+                color: Colors.white,
+              
                 margin: EdgeInsets.all(screenWidth * 0.04),
                 child: Padding(
                   padding: EdgeInsets.all(screenWidth * 0.015),
@@ -153,6 +155,7 @@ Widget build(BuildContext context) {
                       // Title and Date Column
                       Expanded(
                         child: Column(
+
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(

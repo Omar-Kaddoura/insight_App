@@ -35,7 +35,6 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 
   String filter =widget.combinedFilters;
-  print("FILEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEer");
   print(filter);
   final response = await http.get(
     Uri.parse('https://gentle-retreat-85040-e271e09ef439.herokuapp.com/api/users/usersByFilter?email=$email&$filter'),

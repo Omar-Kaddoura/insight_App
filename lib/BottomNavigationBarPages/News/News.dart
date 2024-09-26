@@ -81,14 +81,17 @@ Widget build(BuildContext context) {
       double screenWidth = constraints.maxWidth;
       double screenHeight = constraints.maxHeight;
       return Scaffold(
+        backgroundColor: Colors.white,
         body: ListView.builder(
           itemCount: newsItems.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
               return Padding(
+                 
                 padding: EdgeInsets.symmetric(
                   horizontal: screenWidth * 0.04,
                   vertical: screenHeight * 0.001,
+                  
                 ),
                 child: Text(
                   'Top stories',
@@ -116,6 +119,8 @@ Widget build(BuildContext context) {
                 );
               },
               child: Card(
+                color: Colors.white,
+                elevation: 2,
                 margin: EdgeInsets.all(screenWidth * 0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

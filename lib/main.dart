@@ -13,8 +13,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print("hereee");
+  
   FcmService().initializeFCM();
+  
   
   // Initialize secure storage
   final _storage = FlutterSecureStorage();
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Registration',
+      title: 'Insight App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

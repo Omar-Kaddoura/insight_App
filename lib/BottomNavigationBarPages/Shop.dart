@@ -6,7 +6,7 @@ class Shop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.deepPurpleAccent),
+      decoration: BoxDecoration(color: Colors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -14,12 +14,12 @@ class Shop extends StatelessWidget {
           Icon(
             Icons.camera,
             size: 120,
-            color: Colors.white,
+            color: Colors.purple,
           ),
           Text(
             'Shop Page',
             style: TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.w700),
+                color: Colors.purple, fontSize: 30, fontWeight: FontWeight.w700),
           )
         ],
       ),

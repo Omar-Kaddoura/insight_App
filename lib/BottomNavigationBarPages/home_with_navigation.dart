@@ -50,6 +50,7 @@ class _HomePageWithNavigationState extends State<HomePageWithNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(),
       body: PageView(
         controller: _pageController,
