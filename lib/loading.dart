@@ -21,7 +21,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   
     // if (widget.userType == 'Admin') {
     //   Navigator.pushReplacementNamed(context, '/admin_home');
-    // } else {
+    // } else {`
     //   Navigator.pushReplacementNamed(context, '/student_home');
     // }
   }
